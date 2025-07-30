@@ -1,4 +1,5 @@
 ﻿using System;
+using UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -6,6 +7,7 @@ namespace GMTK
 {
 	public class TimelineRunner : MonoBehaviour
 	{
+		private UITimelineManager _uiTimeline;
 		public Timeline Timeline;
 		public bool Playing = false;
 
@@ -14,12 +16,16 @@ namespace GMTK
 		public InputAction _debugCreateCheckpoint;
 		public InputAction _debugGoToTestFrame;
 		public InputActionReference _playbackToggle;
+		public long PendingFrame => Timeline._playbackFrame + 1;
 
 		private void Awake()
 		{
 			_debugCreateCheckpoint.Enable();
 			_debugGoToTestFrame.Enable();
 			_playbackToggle.action.Enable();
+			
+			//this is temp (FAMOUSLASTWORDS)
+			_uiTimeline = GameObject.FindFirstObjectByType<UITimelineManager>();
 		}
 
 		private void Start()
@@ -44,6 +50,11 @@ namespace GMTK
 			if (_debugGoToTestFrame.WasPerformedThisFrame())
 			{
 				Timeline.GoToFrame(testFrame);
+			}
+
+			if (_uiTimeline != null)
+			{
+				_uiTimeline.SetStartAndEnd(Timeline._playbackFrame - _uiTimeline.TimelineLength, Timeline._playbackFrame);
 			}
 		}
 

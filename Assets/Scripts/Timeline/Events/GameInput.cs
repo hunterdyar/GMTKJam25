@@ -1,11 +1,19 @@
 ﻿using System;
+using GMTK;
+using JetBrains.Annotations;
 
-[Flags]
-public enum GameInput
+public struct GameInput
 {
-	None,
-	AButton,
-	BButton,
-	HorizontalAxis,
-	VerticalAxis
+	public static GameInput None = new GameInput();
+	[CanBeNull] public ButtonEvent JumpButton;
+	
+	public bool Any()
+	{
+		return JumpButton != null;
+	}
+}
+
+public enum Buttons
+{
+	Jump
 }

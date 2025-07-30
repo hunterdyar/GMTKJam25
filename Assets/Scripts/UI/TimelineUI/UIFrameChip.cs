@@ -27,13 +27,13 @@ namespace UI
 
 		public void UpdateVisuals()
 		{
-			int realFrame = _timelineManager.StartDisplayFrame + _relativeIndex;
+			long realFrame = _timelineManager.StartDisplayFrame + _relativeIndex;
 			if (realFrame > _timelineManager.EndDisplayFrame)
 			{
 				_image.enabled = false;
 				return;
 			}
-			if (_timelineManager.Timeline.GetFrame(realFrame, out var inputs))
+			if (_timelineManager.Timeline.TryGetFrame(realFrame, out var inputs))
 			{
 				//set active
 				//show icons

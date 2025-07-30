@@ -8,19 +8,23 @@ namespace UI
 {
 	public class UITimelineManager : MonoBehaviour
 	{
-		public int StartDisplayFrame;
-		public int EndDisplayFrame;
+		public long StartDisplayFrame;
+		public long EndDisplayFrame;
 
 		public int TimelineLength = 100;
 		public List<UIFrameChip> Chips;
 
 		[Header("Scene Config")] public Transform FrameTimelineParent;
-
+		public Transform ButtonChipParent;
 		public Timeline Timeline => _timeline;//public getter
 		public Action OnPositionUpdate;
 
 		[Header("Config")] [SerializeField] Timeline _timeline;
 		public UIFrameChip FrameChipPrefab;
+		public UIButtonChip ButtonChipPrefab;
+
+		public List<ButtonEvent> VisibleButtonEvents = new List<ButtonEvent>();
+		public List<UIButtonChip> ButtonChips = new List<UIButtonChip>();
 		void Start()
 		{
 			Chips = new List<UIFrameChip>();
@@ -53,6 +57,56 @@ namespace UI
 					Chips[index].UpdateVisuals();
 				}
 			}
+			//slow :(
+			UpdateVisibleButtons();
+		}
+
+		public bool TryGetFrameChip(long frame, out UIFrameChip chip)
+		{
+			int index = (int)(frame - StartDisplayFrame);
+			if (index >= 0 && index < Chips.Count)
+			{
+				chip = Chips[index];
+				return true;
+			}
+			chip = null;
+			return false;
+		}
+		
+		public void UpdateVisibleButtons()
+		{
+			//todo: only clear if the events are out of view.
+			VisibleButtonEvents.Clear();
+			for (long i = StartDisplayFrame;i<EndDisplayFrame; i++)
+			{
+				if (_timeline.TryGetFrame(i, out var input))
+				{
+					if (!VisibleButtonEvents.Contains(input.JumpButton))
+					{
+						VisibleButtonEvents.Add(input.JumpButton);
+					}
+				}
+			}
+			//todo: we can get away with slow functions here because the truncated timeline won't show thousands of buttons... (I HOPE)
+			for (int i = ButtonChips.Count - 1; i >= 0; i--)
+			{
+				Destroy(ButtonChips[i].gameObject);
+
+				// if (ButtonChips[i].ReleaseFrame < StartDisplayFrame || ButtonChips[i].PressFrame > EndDisplayFrame)
+				// {
+				// 	ButtonChips.RemoveAt(i);
+				// 	//todo: pooler
+				// }
+			}
+			ButtonChips.Clear();
+
+			for (int i = 0; i < VisibleButtonEvents.Count; i++)
+			{
+				//Create Button Chip.
+				var chip = Instantiate(ButtonChipPrefab, ButtonChipParent);
+				chip.Init(this,VisibleButtonEvents[i]);
+				ButtonChips.Add(chip);
+			}
 		}
 
 		private UIFrameChip CreateChip(int index)
@@ -61,6 +115,27 @@ namespace UI
 			chip.SetIndex(index);
 			chip.SetManager(this);
 			return chip;
+		}
+
+
+		public void SetStartAndEnd(long newStart, long newEnd)
+		{
+			if (newStart != StartDisplayFrame || newEnd != EndDisplayFrame)
+			{
+				StartDisplayFrame = newStart;
+				EndDisplayFrame = newEnd;
+				UpdateVisibleButtons();
+			}
+		}
+
+		public UIFrameChip GetLeftEdgeChip()
+		{
+			return Chips[0];
+		}
+
+		public UIFrameChip GetRightEdgeChip()
+		{
+			return  Chips[^1];
 		}
 	}
 }

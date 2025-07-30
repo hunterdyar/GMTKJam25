@@ -65,14 +65,15 @@ namespace GMTK
 			
 			if (_inputsMap.TryGetValue(_playbackFrame, out GameInput input))
 			{
-				if (_pending != GameInput.None)
+				if (_pending.Any())
 				{
-					_inputsMap[_playbackFrame] = input | _pending;
+					//replace! bad but hey.
+					_inputsMap[_playbackFrame] = _pending;
 				}
 			}
 			else
 			{
-				if (_pending != GameInput.None)
+				if (_pending.Any())
 				{
 					_inputsMap.Add(_playbackFrame, _pending);
 				}
@@ -137,7 +138,7 @@ namespace GMTK
 			}
 		}
 
-		public bool GetFrame(long frame, out GameInput input)
+		public bool TryGetFrame(long frame, out GameInput input)
 		{
 			return _inputsMap.TryGetValue(frame, out input);
 		}

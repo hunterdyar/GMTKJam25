@@ -1,4 +1,5 @@
 using System;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -9,22 +10,53 @@ namespace GMTK
     {
         private TimelineRunner _runner;
         public InputAction _jumpAction;
-
+        private GameInput _gameInput;
+        [CanBeNull] private ButtonEvent _currentJumpEvent;
         private void Awake()
         {
             _runner = GetComponent<TimelineRunner>();
             _jumpAction.Enable();
         }
 
-        // Update is called once per frame
         void Update()
         {
-            if (_jumpAction.WasPerformedThisFrame())
+            if (_runner.Playing)
             {
-                if (_runner.Playing)
+                _gameInput.JumpButton = _currentJumpEvent;
+                if (_jumpAction.WasPerformedThisFrame())
                 {
-                    Debug.Log("We should jump on the current playing frame!");
-                    _runner.Timeline.SetInputOnNextTickedFrame(GameInput.AButton);
+                    if (_currentJumpEvent != null)
+                    {
+                        Debug.LogError("Previous Jump event never reset!");
+                    }
+
+                    _currentJumpEvent = new ButtonEvent
+                    {
+                        Button = Buttons.Jump,
+                        PressFrame = _runner.PendingFrame
+                    };
+                    _gameInput.JumpButton = _currentJumpEvent;
+                }
+
+                if (_jumpAction.WasReleasedThisFrame())
+                {
+                    if (_currentJumpEvent == null)
+                    {
+                        Debug.LogError("Previous Jump event never set!");
+                        return;
+                    }
+                    _currentJumpEvent.ReleaseFrame = _runner.PendingFrame;
+                    _gameInput.JumpButton = _currentJumpEvent;
+                    _runner.Timeline.SetInputOnNextTickedFrame(_gameInput);
+                    _currentJumpEvent = null;
+                }
+            }
+
+            if (_runner.Playing)
+            {
+                if (_gameInput.Any())
+                {
+                    _runner.Timeline.SetInputOnNextTickedFrame(_gameInput);
                 }
             }
         }

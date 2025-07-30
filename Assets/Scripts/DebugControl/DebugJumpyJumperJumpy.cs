@@ -25,12 +25,7 @@ namespace DebugControl
 		}
 		private void OnInput(long frame, GameInput input)
 		{
-			if (input == GameInput.None)
-			{
-				return;
-			}
-			
-			if ((input & GameInput.AButton) > 0)
+			if ((input.JumpButton.IsFirstPressed(frame)))
 			{
 				_rigidbody.AddForce(Vector3.up*3, ForceMode.Impulse);
 			}

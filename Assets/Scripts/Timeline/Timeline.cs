@@ -11,12 +11,12 @@ namespace GMTK
 		public static Action<long, GameInput> OnInput;
 		public long _playbackFrame;
 		
-		private readonly Dictionary<long, GameInput[]> _inputsMap = new Dictionary<long, GameInput[]>();
+		private readonly Dictionary<long, GameInput> _inputsMap = new Dictionary<long, GameInput>();
 
 		private readonly List<Checkpoint> _checkpoints = new List<Checkpoint>();
 		private readonly List<TimelineListener> _listeners = new List<TimelineListener>();
 
-		
+		private GameInput _pending;
 		public void Init()
 		{
 			_playbackFrame = 0;
@@ -41,6 +41,10 @@ namespace GMTK
 				_playbackFrame = i;
 				TickFrame(i);
 			}
+			
+			//now we are caught up to this frame, let's play this frame back out.
+			_playbackFrame = frame;
+			TickFrame(frame);
 		}
 
 		public void SetDirtyAfter(long frame)
@@ -57,17 +61,37 @@ namespace GMTK
 		public void Tick()
 		{
 			_playbackFrame++;
+			//add new inputs! todo: playback vs. recording :p
+			
+			if (_inputsMap.TryGetValue(_playbackFrame, out GameInput input))
+			{
+				if (_pending != GameInput.None)
+				{
+					_inputsMap[_playbackFrame] = input | _pending;
+				}
+			}
+			else
+			{
+				if (_pending != GameInput.None)
+				{
+					_inputsMap.Add(_playbackFrame, _pending);
+				}
+			}
+
 			TickFrame(_playbackFrame);
+			_pending = GameInput.None;
+		}
+
+		public void SetInputOnNextTickedFrame(GameInput input)
+		{
+			_pending = input;
 		}
 
 		public void TickFrame(long frame)
 		{
-			if (_inputsMap.TryGetValue(frame, out var inputs))
+			if (_inputsMap.TryGetValue(frame, out var input))
 			{
-				foreach (var input in inputs)
-				{
-					BroadcastEvent(_playbackFrame, input);
-				}
+				BroadcastEvent(_playbackFrame, input);
 			}
 
 			Physics.Simulate(Time.fixedUnscaledDeltaTime);
@@ -84,7 +108,7 @@ namespace GMTK
 			_checkpoints.Add(c);
 		}
 
-		public void BroadcastEvent(long frame, GameInput input)
+		private void BroadcastEvent(long frame, GameInput input)
 		{
 			OnInput?.Invoke(frame, input);
 		}
@@ -111,6 +135,11 @@ namespace GMTK
 			{
 				Debug.LogWarning("Listener not in in timeline", timelineListener);
 			}
+		}
+
+		public bool GetFrame(long frame, out GameInput input)
+		{
+			return _inputsMap.TryGetValue(frame, out input);
 		}
 	}
 }

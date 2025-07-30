@@ -1,0 +1,116 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+
+namespace Timeline
+{
+	[CreateAssetMenu(fileName = "Timeline", menuName = "Jam/Timeline", order = 0)]
+	public class Timeline : ScriptableObject
+	{
+		public static Action<long, GameInput> OnInput;
+		public long _playbackFrame;
+		
+		private readonly Dictionary<long, GameInput[]> _inputsMap = new Dictionary<long, GameInput[]>();
+
+		private readonly List<Checkpoint> _checkpoints = new List<Checkpoint>();
+		private readonly List<TimelineListener> _listeners = new List<TimelineListener>();
+
+		
+		public void Init()
+		{
+			_playbackFrame = 0;
+			_inputsMap.Clear();
+			_checkpoints.Clear();
+			Physics.simulationMode = SimulationMode.Script;
+		}
+
+		public void GoToFrame(long frame)
+		{
+			//clamp
+			if (frame < 0)
+			{
+				frame = 0;
+			}
+			
+			//restore to next available checkpoint.
+			var lkg = _checkpoints.Where(x => x.Frame <= frame).OrderByDescending(x => x.Frame).First();
+			lkg.RestoreCheckpoint();
+			for (long i = lkg.Frame; i < frame; i++)
+			{
+				_playbackFrame = i;
+				TickFrame(i);
+			}
+		}
+
+		public void SetDirtyAfter(long frame)
+		{
+			for (int i = _checkpoints.Count - 1; i >= 0; i--)
+			{
+				if (_checkpoints[i].Frame > frame)
+				{
+					_checkpoints.RemoveAt(i);
+				}
+			}
+		}
+		
+		public void Tick()
+		{
+			_playbackFrame++;
+			TickFrame(_playbackFrame);
+		}
+
+		public void TickFrame(long frame)
+		{
+			if (_inputsMap.TryGetValue(frame, out var inputs))
+			{
+				foreach (var input in inputs)
+				{
+					BroadcastEvent(_playbackFrame, input);
+				}
+			}
+
+			Physics.Simulate(Time.fixedUnscaledDeltaTime);
+		}
+
+		public void CreateCheckpointAtCurrent()
+		{
+			var c = new Checkpoint(_playbackFrame);
+			foreach (var listener in _listeners)
+			{
+				listener.SaveCurrentSelfToCheckpoint(ref c);
+			}
+
+			_checkpoints.Add(c);
+		}
+
+		public void BroadcastEvent(long frame, GameInput input)
+		{
+			OnInput?.Invoke(frame, input);
+		}
+
+		public void AddTimelineListener(TimelineListener timelineListener)
+		{
+			if (!_listeners.Contains(timelineListener))
+			{
+				_listeners.Add(timelineListener);
+			}
+			else
+			{
+				Debug.LogWarning("Listener already in timeline", timelineListener);
+			}
+		}
+
+		public void RemoveTimelineListener(TimelineListener timelineListener)
+		{
+			if (_listeners.Contains(timelineListener))
+			{
+				_listeners.Remove(timelineListener);
+			}
+			else
+			{
+				Debug.LogWarning("Listener not in in timeline", timelineListener);
+			}
+		}
+	}
+}

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Timeline
+namespace GMTK
 {
 	public class Checkpoint
 	{

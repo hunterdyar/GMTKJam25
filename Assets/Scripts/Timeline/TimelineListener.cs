@@ -1,10 +1,10 @@
 using System;
-using Timeline;
+using GMTK;
 using UnityEngine;
 
 public class TimelineListener : MonoBehaviour
 {
-    public Timeline.Timeline _timeline;
+    public GMTK.Timeline _timeline;
 
 
     protected virtual void Awake()

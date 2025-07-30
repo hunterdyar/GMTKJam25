@@ -1,4 +1,4 @@
-﻿namespace Timeline
+﻿namespace GMTK
 {
 	public class TimelineEvent
 	{

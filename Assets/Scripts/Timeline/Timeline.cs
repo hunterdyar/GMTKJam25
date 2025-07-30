@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace Timeline
+namespace GMTK
 {
 	[CreateAssetMenu(fileName = "Timeline", menuName = "Jam/Timeline", order = 0)]
 	public class Timeline : ScriptableObject

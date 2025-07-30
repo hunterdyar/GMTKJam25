@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Timeline
+namespace GMTK
 {
 	public abstract class CheckpointData
 	{

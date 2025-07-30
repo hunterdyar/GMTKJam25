@@ -17,9 +17,11 @@ namespace GMTK
 		private readonly List<TimelineListener> _listeners = new List<TimelineListener>();
 
 		private GameInput _pending;
+		private long _lastFrame;
 		public void Init()
 		{
 			_playbackFrame = 0;
+			_lastFrame = 0;
 			_inputsMap.Clear();
 			_checkpoints.Clear();
 			Physics.simulationMode = SimulationMode.Script;
@@ -56,6 +58,8 @@ namespace GMTK
 					_checkpoints.RemoveAt(i);
 				}
 			}
+
+			_lastFrame = frame;
 		}
 		
 		public void Tick()
@@ -96,6 +100,7 @@ namespace GMTK
 			}
 
 			Physics.Simulate(Time.fixedUnscaledDeltaTime);
+			_lastFrame = frame > _lastFrame ? frame : _lastFrame;
 		}
 
 		public void CreateCheckpointAtCurrent()
@@ -141,6 +146,11 @@ namespace GMTK
 		public bool TryGetFrame(long frame, out GameInput input)
 		{
 			return _inputsMap.TryGetValue(frame, out input);
+		}
+
+		public long LastFrame()
+		{
+			return _lastFrame;
 		}
 	}
 }

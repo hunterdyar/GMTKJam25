@@ -27,25 +27,27 @@ namespace UI
 
 		public void UpdateVisuals()
 		{
-			long realFrame = _timelineManager.StartDisplayFrame + _relativeIndex;
-			if (realFrame > _timelineManager.EndDisplayFrame)
-			{
-				_image.enabled = false;
-				return;
-			}
-			if (_timelineManager.Timeline.TryGetFrame(realFrame, out var inputs))
-			{
-				//set active
-				//show icons
-				_image.color = Color.blueViolet;
-				_image.enabled = true;
-				
-			}
-			else
-			{
-				_image.enabled = true;
-				_image.color = Color.white;
-			}
+			//if is playbackframe, make special color!
+			
+			// long realFrame = _timelineManager.StartDisplayFrame + _relativeIndex;
+			// if (realFrame > _timelineManager.EndDisplayFrame)
+			// {
+			// 	_image.enabled = false;
+			// 	return;
+			// }
+			// if (_timelineManager.Timeline.TryGetFrame(realFrame, out var inputs))
+			// {
+			// 	//set active
+			// 	//show icons
+			// 	_image.color = Color.blueViolet;
+			// 	_image.enabled = true;
+			// 	
+			// }
+			// else
+			// {
+			// 	_image.enabled = true;
+			// 	_image.color = Color.white;
+			// }
 		}
 	}
 }

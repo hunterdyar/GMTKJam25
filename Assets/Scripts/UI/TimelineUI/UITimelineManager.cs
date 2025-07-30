@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using GMTK;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace UI
 {
@@ -25,6 +26,8 @@ namespace UI
 
 		public List<ButtonEvent> VisibleButtonEvents = new List<ButtonEvent>();
 		public List<UIButtonChip> ButtonChips = new List<UIButtonChip>();
+		
+		[SerializeField] Scrollbar _scrollbar;
 		void Start()
 		{
 			Chips = new List<UIFrameChip>();
@@ -34,7 +37,14 @@ namespace UI
 			}
 			
 			OnPositionUpdate?.Invoke();
+			if (_scrollbar == null)
+			{
+				_scrollbar = GetComponentInChildren<Scrollbar>();	
+				_scrollbar.onValueChanged.AddListener(OnScrollbarValueChanged);
+			}
 		}
+
+		
 
 		private void OnEnable()
 		{
@@ -48,15 +58,24 @@ namespace UI
 
 		private void OnInput(long frame, GameInput input)
 		{
-			if (frame >= StartDisplayFrame && frame <= EndDisplayFrame)
-			{
-				int index = (int)(frame - StartDisplayFrame);
-				//uh?
-				if (index >= 0 && index < Chips.Count)
-				{
-					Chips[index].UpdateVisuals();
-				}
-			}
+			//change color of timeline chip.
+			
+			// if (frame >= StartDisplayFrame && frame <= EndDisplayFrame)
+			// {
+			// 	int index = (int)(frame - StartDisplayFrame);
+			// 	//uh?
+			// 	if (index >= 0 && index < Chips.Count)
+			// 	{
+			// 		Chips[index].UpdateVisuals();
+			// 	}
+			// }
+
+			//update button things.
+			UpdateVisuals();
+		}
+
+		public void UpdateVisuals()
+		{
 			//slow :(
 			UpdateVisibleButtons();
 		}
@@ -116,16 +135,37 @@ namespace UI
 			chip.SetManager(this);
 			return chip;
 		}
-
-
+		
 		public void SetStartAndEnd(long newStart, long newEnd)
 		{
 			if (newStart != StartDisplayFrame || newEnd != EndDisplayFrame)
 			{
 				StartDisplayFrame = newStart;
 				EndDisplayFrame = newEnd;
-				UpdateVisibleButtons();
+				UpdateScrollbarByValues();
+				UpdateVisuals();
 			}
+		}
+
+		private void UpdateScrollbarByValues()
+		{
+			//todo: none of this works
+			var size = _timeline.LastFrame();
+			if (size == 0)
+			{
+				_scrollbar.size = 1;
+				return;
+			}
+			var visibleWidth = (EndDisplayFrame - StartDisplayFrame) / size;
+			_scrollbar.size = visibleWidth;
+			var middleFrame = StartDisplayFrame + (StartDisplayFrame-EndDisplayFrame)/2;
+			_scrollbar.value = 1-(middleFrame / (float)size);
+		}
+
+		private void OnScrollbarValueChanged(float val)
+		{
+			// var size = _timeline.LastFrame();
+			// _scrollbar.value = size*
 		}
 
 		public UIFrameChip GetLeftEdgeChip()

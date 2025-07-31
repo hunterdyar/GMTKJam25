@@ -20,6 +20,7 @@ namespace GMTK
 
 		private GameInput _pending;
 		private long _lastFrame;
+		private long _dirtyFrame;
 		public long MaxFrame;
 
 		public void Init(long max)
@@ -58,7 +59,7 @@ namespace GMTK
 			}
 			
 			//restore to next available checkpoint.
-			var lkg = _checkpoints.Where(x => x.Frame <= frame).OrderByDescending(x => x.Frame).First();
+			var lkg = _checkpoints.Where(x => x.Frame <= frame && x.Frame < _dirtyFrame).OrderByDescending(x => x.Frame).First();
 			lkg.RestoreCheckpoint();
 			for (long i = lkg.Frame; i < frame; i++)
 			{
@@ -79,18 +80,21 @@ namespace GMTK
 
 		public void SetDirtyAfter(long frame)
 		{
+			_dirtyFrame = frame+1;
+		}
+
+		public void ClearDirtyCheckpoints()
+		{
 			for (int i = _checkpoints.Count - 1; i >= 0; i--)
 			{
-				if (_checkpoints[i].Frame > frame)
+				if (_checkpoints[i].Frame >= _dirtyFrame)
 				{
 					_checkpoints.RemoveAt(i);
 				}
 			}
-
-			_lastFrame = frame;
 		}
 		
-		public void Tick()
+		public void Tick(bool recording = false)
 		{
 			_playbackFrame++;
 			if (_playbackFrame >= MaxFrame)
@@ -98,17 +102,21 @@ namespace GMTK
 				return;
 			}
 			//add new inputs! todo: playback vs. recording :p
-			
-			if (_inputsMap.TryGetValue(_playbackFrame, out GameInput input))
+			if (recording)
 			{
-				input = MergeInputs(_playbackFrame, input,  _pending);
-				_inputsMap[_playbackFrame] = input;
-			}
-			else
-			{
-				if (_pending.Any())
+				if (_inputsMap.TryGetValue(_playbackFrame, out GameInput input))
 				{
-					_inputsMap.Add(_playbackFrame, _pending);
+					input = MergeInputs(_playbackFrame, input, _pending);
+					_inputsMap[_playbackFrame] = input;
+					//if we updated things?
+					_dirtyFrame = _playbackFrame;
+				}
+				else
+				{
+					if (_pending.Any())
+					{
+						_inputsMap.Add(_playbackFrame, _pending);
+					}
 				}
 			}
 
@@ -333,6 +341,8 @@ namespace GMTK
 					input.ArrowButtonB.ReleaseFrame = frame;
 				}
 			}
+
+			_pending = GameInput.None;
 		}
 	}
 }

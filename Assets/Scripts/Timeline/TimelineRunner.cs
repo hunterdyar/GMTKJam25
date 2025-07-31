@@ -65,7 +65,7 @@ namespace GMTK
 		{
 			if (Playing)
 			{
-				Timeline.Tick();
+				Timeline.Tick(_state == RunnerControlState.Recording);
 			}
 		}
 

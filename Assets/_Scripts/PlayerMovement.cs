@@ -182,4 +182,9 @@ public class PlayerMovement : MonoBehaviour
             }
         }
     }
+
+    public bool IsGrounded => isGrounded;
+
+    public bool IsMoving => inputDirection.sqrMagnitude > 0.01f;
+
 }

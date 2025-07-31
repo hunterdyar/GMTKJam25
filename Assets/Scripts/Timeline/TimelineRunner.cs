@@ -21,7 +21,6 @@ namespace GMTK
 		/// If we are trying to watch or record the game with a real world clock ticking things.
 		/// </summary>
 		public bool Playing = false;
-
 		public long testFrame;
 
 		public InputAction _debugCreateCheckpoint;
@@ -34,7 +33,7 @@ namespace GMTK
 		{
 			_debugCreateCheckpoint.Enable();
 			_debugGoToTestFrame.Enable();
-			_state = RunnerControlState.Recording;
+			_state = RunnerControlState.Playback;
 			//this is temp (FAMOUSLASTWORDS)
 			_uiTimeline = GameObject.FindFirstObjectByType<UITimelineManager>();
 		}
@@ -79,9 +78,15 @@ namespace GMTK
 		{
 			if (_state == RunnerControlState.Playback)
 			{
+				//todo: fine for now, enter playback when not recording.
+				if (!Playing)
+				{
+					PlayPauseToggle();
+				}
 				_state = RunnerControlState.Recording;
 			}else if (_state == RunnerControlState.Recording)
 			{
+				Timeline.ForceReleaseInput(Timeline.CurrentDisplayedFrame);
 				//i know we don't actually need the else but I am anticipating future states.
 				_state = RunnerControlState.Playback;
 

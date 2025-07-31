@@ -297,5 +297,26 @@ namespace GMTK
 		{
 			return _lastFrame;
 		}
+
+		public void ForceReleaseInput(long frame)
+		{
+			if (_inputsMap.TryGetValue(frame, out var input))
+			{
+				if (input.JumpButton != null && input.JumpButton.ReleaseFrame == -1)
+				{
+					input.JumpButton.ReleaseFrame = frame;
+				}
+
+				if (input.ArrowButton != null && input.ArrowButton.ReleaseFrame == -1)
+				{
+					input.ArrowButton.ReleaseFrame = frame;
+				}
+
+				if (input.ArrowButtonB != null && input.ArrowButtonB.ReleaseFrame == -1)
+				{
+					input.ArrowButtonB.ReleaseFrame = frame;
+				}
+			}
+		}
 	}
 }

@@ -14,8 +14,9 @@ namespace GMTK
         private GameInput _gameInput;
         [CanBeNull] private ButtonEvent _currentJumpEvent;
         [CanBeNull] private ButtonEvent _currentMoveEvent;
-        private Vector2 _inDir;
-        private Buttons _inButtons;
+        [CanBeNull] private ButtonEvent _alternateMoveEvent;
+        [SerializeField] private Vector2 _inDir;
+        [SerializeField] private Buttons _inButtons;
         private void Awake()
         {
             _runner = GetComponent<TimelineRunner>();
@@ -68,6 +69,7 @@ namespace GMTK
                             PressFrame = _runner.PendingFrame
                         };
                         _gameInput.ArrowButton = _currentMoveEvent;
+                        Debug.Assert(_gameInput.ArrowButtonB == null);
                     }
                     else
                     {
@@ -75,7 +77,8 @@ namespace GMTK
                         if (_currentMoveEvent.Button != _inButtons)
                         {
                             //changed a direction!
-                            ReleaseMoveEvent();
+                            _currentMoveEvent.ReleaseFrame  = _runner.PendingFrame;
+                            _gameInput.ArrowButtonB = _currentMoveEvent;
                             _currentMoveEvent = new ButtonEvent()
                             {
                                 Button = _inButtons,
@@ -85,6 +88,12 @@ namespace GMTK
                         }
                         else
                         {
+                            if (_gameInput.ArrowButtonB != null)
+                            {
+                                //shift back into primary
+                                _gameInput.ArrowButton = _currentMoveEvent;
+                                _gameInput.ArrowButtonB = null;
+                            }
                             //we are continuing to press the button.
                             Debug.Assert(_currentMoveEvent.Button != Buttons.None && _currentMoveEvent.Button != Buttons.Jump);
                         }
@@ -115,6 +124,7 @@ namespace GMTK
                 _runner.Timeline.SetInputOnNextTickedFrame(_gameInput);
                 _currentMoveEvent = null;
                 _gameInput.ArrowButton = null;//This was the bug! this line missing!
+                _gameInput.ArrowButtonB = null;
             }
             
         }
@@ -126,7 +136,7 @@ namespace GMTK
             var h = Mathf.RoundToInt(dir.normalized.x);
             var v = Mathf.RoundToInt(dir.normalized.y);
             Buttons b = 0;
-            if (h == 1)
+            if (h == 1d)
             {
                 b |= Buttons.Right;
             }

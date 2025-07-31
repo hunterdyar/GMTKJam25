@@ -1,10 +1,13 @@
 ﻿using System;
+using UnityEngine;
 
 namespace GMTK
 {
 	//stored on the heap!
 	public class ButtonEvent : IEquatable<ButtonEvent>
 	{
+		public const Buttons AnyDir = (Buttons.Down | Buttons.Left | Buttons.Up | Buttons.Right);
+
 		public Buttons Button = Buttons.None;
 		public long PressFrame = -1;
 		public long ReleaseFrame = -1;
@@ -27,6 +30,43 @@ namespace GMTK
 		public bool IsFirstPressed(long frame)
 		{
 			return PressFrame == frame;
+		}
+
+		public Vector2 GetDir()
+		{
+			if (Button == null || (Button & AnyDir) == 0)
+			{
+				return Vector2.zero;
+			}
+
+			//var h = (ArrowButton.Button & Buttons.Right) >0 ? 1 : 0 + (ArrowButton.Button & Buttons.Left) > 0 ? -1 : 0;
+			//var v = (ArrowButton.Button & Buttons.Up) > 0 ? 1 : 0 + (ArrowButton.Button & Buttons.Down) > 0 ? -1 : 0;
+			var h = 0;
+			var v = 0;
+			switch (Button)
+			{
+				case Buttons.Up:
+					return Vector2.up;
+				case Buttons.Down:
+					return Vector2.down;
+				case Buttons.Left:
+					return Vector2.left;
+				case Buttons.Right:
+					return Vector2.right;
+				
+				case Buttons.UpLeft:
+					return new Vector2(-1, 1);
+				case Buttons.UpRight:
+					return new Vector2(1, 1);
+				
+				case Buttons.DownLeft:
+					return new Vector2(-1, -1);
+				case Buttons.DownRight:
+					return new Vector2(1, -1);
+				
+				default:
+					return Vector2.zero;
+			}
 		}
 
 		public override string ToString()

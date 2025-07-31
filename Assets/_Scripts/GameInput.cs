@@ -1,3 +1,4 @@
+using GMTK;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,6 +12,7 @@ public class PlatformerGameInput : MonoBehaviour
 
     private bool jumpQueued = false;
 
+    [SerializeField] private Timeline _timeline;
     public bool JumpPressed
     {
         get
@@ -36,7 +38,7 @@ public class PlatformerGameInput : MonoBehaviour
         inputActions.Player.Jump.started += ctx => IsJumpHeld = true;
         inputActions.Player.Jump.canceled += ctx => IsJumpHeld = false;
     }
-
+    
 
     public Vector3 GetWorldDirection(Camera cam)
     {

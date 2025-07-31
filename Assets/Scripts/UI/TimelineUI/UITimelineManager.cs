@@ -125,9 +125,20 @@ namespace UI
 			{
 				if (_timeline.TryGetFrame(i, out var input))
 				{
-					if (!VisibleButtonEvents.Contains(input.JumpButton))
+					if (input.JumpButton != null)
 					{
-						VisibleButtonEvents.Add(input.JumpButton);
+						if (!VisibleButtonEvents.Contains(input.JumpButton))
+						{
+							VisibleButtonEvents.Add(input.JumpButton);
+						}
+					}
+
+					if (input.ArrowButton != null)
+					{
+						if (!VisibleButtonEvents.Contains(input.ArrowButton))
+						{
+							VisibleButtonEvents.Add(input.ArrowButton);
+						}
 					}
 				}
 			}

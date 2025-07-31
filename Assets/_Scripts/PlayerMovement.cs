@@ -1,3 +1,4 @@
+using GMTK;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -34,7 +35,7 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody rb;
     private Vector3 inputDirection;
     private bool isGrounded;
-
+    private bool jump;
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -49,26 +50,45 @@ public class PlayerMovement : MonoBehaviour
         rb.constraints = RigidbodyConstraints.FreezeRotation;
     }
 
-    void Update()
+    private void OnEnable()
     {
-        inputDirection = gameInput.GetWorldDirection(playerCamera);
+        Timeline.OnInput += OnInput;
+    }
+
+    private void OnDisable()
+    {
+        Timeline.OnInput -= OnInput;
+    }
+
+    private void OnInput(long frame, GameInput input)
+    {
+        jump = input.JumpButton != null && input.JumpButton.IsPressed(frame);
+        Vector2 dir = (input.ArrowButton != null && input.ArrowButton.IsPressed(frame)) ? input.GetDir() : Vector2.zero;
+        inputDirection = InputToWorld(dir);
         isGrounded = IsOnGround();
-
-        // Jump buffer
-        if (gameInput.JumpPressed)
-            jumpBufferTimer = jumpBufferTime;
-        else
-            jumpBufferTimer -= Time.deltaTime;
-
-        // Coyote time
-        if (isGrounded)
-            coyoteTimer = coyoteTime;
-        else
-            coyoteTimer -= Time.deltaTime;
-
+        
         // Wall detection
         isTouchingWall = IsTouchingWall(out wallNormal);
 
+        if (jump)
+        {
+            jumpBufferTimer = jumpBufferTime;
+        }
+        else
+        {
+            jumpBufferTimer -= Time.fixedUnscaledDeltaTime;
+        }
+
+        // Coyote time
+        if (isGrounded)
+        {
+            coyoteTimer = coyoteTime;
+        }
+        else
+        {
+            coyoteTimer -= Time.fixedUnscaledDeltaTime;
+        }
+        
         // Jump logic
         if (jumpBufferTimer > 0f && (coyoteTimer > 0f || isTouchingWall))
         {
@@ -83,6 +103,13 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private Vector3 InputToWorld(Vector2 dir)
+    {
+        Vector3 input = new Vector3(dir.x, 0, dir.y);
+        input = Quaternion.Euler(0, 45, 0) * input;
+        return input.normalized;
+    }
+    
     void FixedUpdate()
     {
         TryStepUp();
@@ -105,10 +132,10 @@ public class PlayerMovement : MonoBehaviour
         {
             rb.AddForce(Vector3.up * Physics.gravity.y * (fallMultiplier - 1f), ForceMode.Acceleration);
         }
-        else if (rb.linearVelocity.y > 0f && !gameInput.IsJumpHeld)
-        {
-            rb.AddForce(Vector3.up * Physics.gravity.y * (lowJumpMultiplier - 1f), ForceMode.Acceleration);
-        }
+         else if (rb.linearVelocity.y > 0f && !jump)
+         {
+             rb.AddForce(Vector3.up * Physics.gravity.y * (lowJumpMultiplier - 1f), ForceMode.Acceleration);
+         }
 
         // Clamp fall speed
         if (rb.linearVelocity.y < maxFallSpeed)

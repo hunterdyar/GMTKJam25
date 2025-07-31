@@ -53,26 +53,31 @@ public class UIScrubController : MonoBehaviour
     public void SetScrubbing(bool isScrubbing)
     {
         _isScrubbing = isScrubbing;
-        
     }
 
-    private void JumpLeft()
+    public void Scrub(long delta)
+    {
+        Debug.Assert(_isScrubbing);
+        _manager.Timeline.GoToFrame(_manager.Timeline.CurrentDisplayedFrame + (delta));
+
+    }
+
+    public void JumpLeft()
     {
         Timeline.GoToFrame(Timeline.CurrentDisplayedFrame - 100);
     }
 
-    private void StepLeft()
+    public void StepLeft()
     {
         Timeline.GoToFrame(Timeline.CurrentDisplayedFrame - 1);
     }
 
-    private void JumpRight()
+    public void JumpRight()
     {
         Timeline.GoToFrame(Timeline.CurrentDisplayedFrame + 100);
-
     }
 
-    private void StepRight()
+    public void StepRight()
     {
         Timeline.GoToFrame(Timeline.CurrentDisplayedFrame + 1);
     }

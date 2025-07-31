@@ -9,8 +9,20 @@ namespace GMTK
     public class PlayerInput : MonoBehaviour
     {
         private TimelineRunner _runner;
+        [SerializeField] private UIScrubController _scrubber;
+        [Header("Player Game Controls")]
         public InputActionReference _jumpAction;
         public InputActionReference _moveAction;
+        [Header("Player Timeline Controls")]
+        public InputActionReference _recordModeToggle;
+        public InputActionReference _playPauseToggle;
+        [Header("Scrubbing Controls")]
+        public InputActionReference _stepForwardsOne;
+        public InputActionReference _stepBackwardsOne;
+        public InputActionReference _jumpForward;
+        public InputActionReference _jumpBackward;
+        public InputActionReference _holdToScrubWithMove;
+        //
         private GameInput _gameInput;
         [CanBeNull] private ButtonEvent _currentJumpEvent;
         [CanBeNull] private ButtonEvent _currentMoveEvent;
@@ -21,10 +33,57 @@ namespace GMTK
         {
             _runner = GetComponent<TimelineRunner>();
             _jumpAction.action.Enable();
+            _moveAction.action.Enable();
+            _recordModeToggle.action.Enable();
+            _playPauseToggle.action.Enable();
+            _stepForwardsOne.action.Enable();
+            _stepBackwardsOne.action.Enable();
+            _jumpForward.action.Enable();
+            _jumpBackward.action.Enable();
+            _holdToScrubWithMove.action.Enable();
+            
         }
 
         void Update()
         {
+            if (_playPauseToggle.action.WasPerformedThisFrame())
+            {
+                _runner.PlayPauseToggle();
+            }
+
+            if (_recordModeToggle.action.WasPerformedThisFrame())
+            {
+                _runner.ToggleRecordState();
+            }
+
+            if (_stepForwardsOne.action.WasPerformedThisFrame())
+            {
+                _runner.PauseIfPlaying();
+                _scrubber.StepRight();
+            }else if (_stepBackwardsOne.action.WasPerformedThisFrame())
+            {
+                _runner.PauseIfPlaying();
+                _scrubber.StepLeft();
+            }else if (_jumpForward.action.WasPerformedThisFrame())
+            {
+                _runner.PauseIfPlaying();
+                _scrubber.JumpRight();
+            }else if (_jumpBackward.action.WasPerformedThisFrame())
+            {
+                _runner.PauseIfPlaying();
+                _scrubber.JumpLeft();
+            }
+
+            bool scrubbing = _holdToScrubWithMove.action.IsPressed();
+            _scrubber.SetScrubbing(scrubbing);
+            if (scrubbing)
+            {
+                _runner.PauseIfPlaying();
+                //stop recording if recording?
+                long delta = (long)(Mathf.RoundToInt(_moveAction.action.ReadValue<Vector2>().x));
+                _scrubber.Scrub(delta);
+            }
+            
             if (_runner.State == RunnerControlState.Recording && _runner.Playing)
             {
                 _gameInput.JumpButton = _currentJumpEvent;

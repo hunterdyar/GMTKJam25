@@ -1,0 +1,109 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6979545708690428475
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4741176316089643358}
+  - component: {fileID: 6396258411252222859}
+  - component: {fileID: 9183801837445360620}
+  m_Layer: 0
+  m_Name: Runner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4741176316089643358
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6979545708690428475}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6396258411252222859
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6979545708690428475}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c9a18b9f85c4ba28783617f545f196f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Timeline: {fileID: 11400000, guid: 8b229de231dd22d43882eb9a438fe6e3, type: 2}
+  Playing: 0
+  testFrame: 0
+  _debugCreateCheckpoint:
+    m_Name: Debug Create Checkpoint
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 1e64154f-ef77-4b0b-85f6-ddfa94a5e45c
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 0bf705af-eacc-468e-b578-c6c78e5bda5a
+      m_Path: <Keyboard>/x
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Debug Create Checkpoint
+      m_Flags: 0
+    m_Flags: 0
+  _debugGoToTestFrame:
+    m_Name: Debug Go To Test Frame
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 279705f4-b31a-42c9-a5e9-6c631046ec59
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 238a5a6c-4466-413b-bb7c-52ad9006a70c
+      m_Path: <Keyboard>/z
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Debug Go To Test Frame
+      m_Flags: 0
+    m_Flags: 0
+  _state: 1
+--- !u!114 &9183801837445360620
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6979545708690428475}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4d70ba60c3a2ae4daf8b13d85679e7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _scrubber: {fileID: 0}
+  _jumpAction: {fileID: -2099379676528639254, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  _moveAction: {fileID: -1680190386980627800, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  _recordModeToggle: {fileID: 2944158152818539970, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  _playPauseToggle: {fileID: 8836002320222734091, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  _stepForwardsOne: {fileID: 7476244043514120974, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  _stepBackwardsOne: {fileID: 2411907206095950430, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  _jumpForward: {fileID: -8047134913825149477, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  _jumpBackward: {fileID: -7432356482242535901, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  _holdToScrubWithMove: {fileID: 6466020443452209430, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  _inDir: {x: 0, y: 0}
+  _inButtons: 0

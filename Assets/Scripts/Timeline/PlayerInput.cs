@@ -129,8 +129,6 @@ namespace GMTK
             
         }
         
-
-        
         public static Buttons DirToMovement(Vector2 dir)
         {
             var h = Mathf.RoundToInt(dir.normalized.x);

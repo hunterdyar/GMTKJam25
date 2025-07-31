@@ -69,8 +69,14 @@ namespace UI
 				var left = (leftChip.transform as RectTransform);
 				var right = (rightChip.transform as RectTransform);
 				var p = left.parent as RectTransform;
-				r.anchoredPosition = new Vector2(Mathf.Lerp(left.anchoredPosition.x-left.rect.width/2, right.anchoredPosition.x+right.rect.width/2, 0.5f),r.anchoredPosition.y) - new Vector2(p.rect.width/2,0);
+				
+				//move % up or down depending on if arrows or jump.
+				//sorry for the magic numbers :p
+				var yShift = ButtonEvent.Button == Buttons.Jump ? -r.rect.height * .4f : + p.rect.height * .4f;
+				
+				r.anchoredPosition = new Vector2(Mathf.Lerp(left.anchoredPosition.x-left.rect.width/2, right.anchoredPosition.x+right.rect.width/2, 0.5f),r.anchoredPosition.y) - new Vector2(p.rect.width/2, yShift);
 				r.sizeDelta = new Vector2(right.anchoredPosition.x-left.anchoredPosition.x,r.sizeDelta.y);
+				
 			}else{
 				
 			}

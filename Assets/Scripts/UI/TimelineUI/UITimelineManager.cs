@@ -188,5 +188,10 @@ namespace UI
 		{
 			return  Chips[(int)HalfFrameCount];
 		}
+
+		public UIFrameChip GetRightEdgeChip()
+		{
+			return Chips[^1];
+		}
 	}
 }

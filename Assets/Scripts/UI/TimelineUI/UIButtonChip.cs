@@ -60,7 +60,9 @@ namespace UI
 			if (_releaseChip == null)
 			{
 				offRightEdge = true;
-				rightChip = _manager.GetCurrentEdgeChip();
+				//if recording, this needs to be _manager.GetCurrent()...
+				rightChip = _manager.GetRightEdgeChip();
+				
 			}
 			
 			if (leftChip != null && rightChip != null)

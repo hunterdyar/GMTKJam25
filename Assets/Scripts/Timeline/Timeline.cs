@@ -20,9 +20,11 @@ namespace GMTK
 
 		private GameInput _pending;
 		private long _lastFrame;
+		public long MaxFrame;
 
-		public void Init()
+		public void Init(long max)
 		{
+			MaxFrame = max;
 			_playbackFrame = -1;
 			_lastFrame = 0;
 			_inputsMap.Clear();
@@ -44,6 +46,11 @@ namespace GMTK
 				frame = _lastFrame;
 			}
 
+			if (frame > MaxFrame)
+			{
+				frame = MaxFrame;
+			}
+
 			if (frame == _playbackFrame)
 			{
 				//
@@ -55,6 +62,10 @@ namespace GMTK
 			lkg.RestoreCheckpoint();
 			for (long i = lkg.Frame; i < frame; i++)
 			{
+				if (i % 10 == 0)
+				{
+					CreateCheckpointAtCurrent();
+				}
 				_playbackFrame = i;
 				TickFrame(i);
 			}
@@ -82,6 +93,10 @@ namespace GMTK
 		public void Tick()
 		{
 			_playbackFrame++;
+			if (_playbackFrame >= MaxFrame)
+			{
+				return;
+			}
 			//add new inputs! todo: playback vs. recording :p
 			
 			if (_inputsMap.TryGetValue(_playbackFrame, out GameInput input))
@@ -103,6 +118,7 @@ namespace GMTK
 		}
 
 		//Merge B into A. Set any releases to playbackFrame. We should be able to discard b after this.
+		//todo: arrows... (uhg copy/paste this mess)
 		private GameInput MergeInputs(long playbackFrame, GameInput a, GameInput b)
 		{
 			//take 2: overwrite

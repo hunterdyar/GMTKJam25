@@ -41,7 +41,7 @@ namespace GMTK
 		private void Start()
 		{
 			Playing = false;
-			Timeline.Init();
+			Timeline.Init(30*50);
 			//save first position.
 			Timeline.CreateCheckpointAtCurrent();
 			OnStateChange?.Invoke(_state);

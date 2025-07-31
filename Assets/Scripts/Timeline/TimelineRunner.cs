@@ -5,10 +5,20 @@ using UnityEngine.InputSystem;
 
 namespace GMTK
 {
+	public enum RunnerControlState
+	{
+		Playback,
+		Recording,
+	}
 	public class TimelineRunner : MonoBehaviour
 	{
+		public static Action<RunnerControlState> OnStateChange;
+		
 		private UITimelineManager _uiTimeline;
 		public Timeline Timeline;
+		/// <summary>
+		/// If we are trying to watch or record the game with a real world clock ticking things.
+		/// </summary>
 		public bool Playing = false;
 
 		public long testFrame;
@@ -16,8 +26,10 @@ namespace GMTK
 		public InputAction _debugCreateCheckpoint;
 		public InputAction _debugGoToTestFrame;
 		public InputActionReference _playbackToggle;
-		public long PendingFrame => Timeline._playbackFrame + 1;
-
+		public long PendingFrame => Timeline.CurrentDisplayedFrame + 1;
+		public RunnerControlState State => _state;
+		[SerializeField]
+		private RunnerControlState _state = RunnerControlState.Playback;
 		private void Awake()
 		{
 			_debugCreateCheckpoint.Enable();
@@ -50,11 +62,6 @@ namespace GMTK
 			if (_debugGoToTestFrame.WasPerformedThisFrame())
 			{
 				Timeline.GoToFrame(testFrame);
-			}
-
-			if (_uiTimeline != null)
-			{
-				_uiTimeline.SetStartAndEnd(Timeline._playbackFrame - _uiTimeline.TimelineLength, Timeline._playbackFrame);
 			}
 		}
 

@@ -20,7 +20,7 @@ namespace GMTK
 
         void Update()
         {
-            if (_runner.Playing)
+            if (_runner.State == RunnerControlState.Recording && _runner.Playing)
             {
                 _gameInput.JumpButton = _currentJumpEvent;
                 if (_jumpAction.WasPerformedThisFrame())

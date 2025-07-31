@@ -8,8 +8,10 @@ namespace GMTK
 	[CreateAssetMenu(fileName = "Timeline", menuName = "Jam/Timeline", order = 0)]
 	public class Timeline : ScriptableObject
 	{
+		public static Action<long> OnCurrentDisplayFrameChanged;
 		public static Action<long, GameInput> OnInput;
-		public long _playbackFrame;
+		public long CurrentDisplayedFrame => _playbackFrame;
+		private long _playbackFrame;
 		
 		private readonly Dictionary<long, GameInput> _inputsMap = new Dictionary<long, GameInput>();
 
@@ -18,9 +20,10 @@ namespace GMTK
 
 		private GameInput _pending;
 		private long _lastFrame;
+
 		public void Init()
 		{
-			_playbackFrame = 0;
+			_playbackFrame = -1;
 			_lastFrame = 0;
 			_inputsMap.Clear();
 			_checkpoints.Clear();
@@ -33,6 +36,18 @@ namespace GMTK
 			if (frame < 0)
 			{
 				frame = 0;
+			}
+
+			//how, really do we clamp here? we CAN jump into the future, just no inputs.
+			if (frame > _lastFrame)
+			{
+				frame = _lastFrame;
+			}
+
+			if (frame == _playbackFrame)
+			{
+				//
+				return;
 			}
 			
 			//restore to next available checkpoint.
@@ -47,6 +62,8 @@ namespace GMTK
 			//now we are caught up to this frame, let's play this frame back out.
 			_playbackFrame = frame;
 			TickFrame(frame);
+			OnCurrentDisplayFrameChanged?.Invoke(frame);
+			CreateCheckpointAtCurrent();
 		}
 
 		public void SetDirtyAfter(long frame)
@@ -84,6 +101,7 @@ namespace GMTK
 			}
 
 			TickFrame(_playbackFrame);
+			OnCurrentDisplayFrameChanged?.Invoke(_playbackFrame);
 			_pending = GameInput.None;
 		}
 

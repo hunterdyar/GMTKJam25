@@ -9,8 +9,10 @@ namespace UI
 {
 	public class UITimelineManager : MonoBehaviour
 	{
-		public long StartDisplayFrame;
-		public long EndDisplayFrame;
+		public long StartDisplayFrame => _startDisplayFrame;
+		private long _startDisplayFrame;
+		public long EndDisplayFrame => _endDisplayFrame;
+		private long _endDisplayFrame;
 
 		public int TimelineLength = 100;
 		public List<UIFrameChip> Chips;
@@ -26,8 +28,21 @@ namespace UI
 
 		public List<ButtonEvent> VisibleButtonEvents = new List<ButtonEvent>();
 		public List<UIButtonChip> ButtonChips = new List<UIButtonChip>();
-		
-		[SerializeField] Scrollbar _scrollbar;
+
+		private UICurrentFrameChip _currentFrameChip;
+		private long _currentViewedDisplayFrame;
+
+		private long HalfFrameCount;
+		private void Awake()
+		{
+			HalfFrameCount = TimelineLength / 2;
+			_currentFrameChip = GetComponent<UICurrentFrameChip>();
+			if (_currentFrameChip != null)
+			{
+				_currentFrameChip.Init(this);
+			}
+		}
+
 		void Start()
 		{
 			Chips = new List<UIFrameChip>();
@@ -37,25 +52,27 @@ namespace UI
 			}
 			
 			OnPositionUpdate?.Invoke();
-			if (_scrollbar == null)
-			{
-				_scrollbar = GetComponentInChildren<Scrollbar>();	
-				_scrollbar.onValueChanged.AddListener(OnScrollbarValueChanged);
-			}
 		}
-
-		
 
 		private void OnEnable()
 		{
 			Timeline.OnInput += OnInput;
+			Timeline.OnCurrentDisplayFrameChanged += OnCurrentDisplayFrameChanged;
 		}
 
 		private void OnDisable()
 		{
-			Timeline.OnInput -= OnInput;
+			Timeline.OnCurrentDisplayFrameChanged -= OnCurrentDisplayFrameChanged;
 		}
 
+		private void OnCurrentDisplayFrameChanged(long frame)
+		{
+			//this frame should be centered.
+			if (_currentViewedDisplayFrame != frame)
+			{
+				UpdateVisuals();
+			}
+		}
 		private void OnInput(long frame, GameInput input)
 		{
 			//change color of timeline chip.
@@ -76,8 +93,16 @@ namespace UI
 
 		public void UpdateVisuals()
 		{
+			_startDisplayFrame = _timeline.CurrentDisplayedFrame - HalfFrameCount;
+			_endDisplayFrame = _timeline.CurrentDisplayedFrame + HalfFrameCount;
+
+			foreach (var chip in Chips)
+			{
+				chip.UpdateVisuals();
+			}
 			//slow :(
 			UpdateVisibleButtons();
+			_currentViewedDisplayFrame = _timeline.CurrentDisplayedFrame;
 		}
 
 		public bool TryGetFrameChip(long frame, out UIFrameChip chip)
@@ -96,7 +121,7 @@ namespace UI
 		{
 			//todo: only clear if the events are out of view.
 			VisibleButtonEvents.Clear();
-			for (long i = StartDisplayFrame;i<EndDisplayFrame; i++)
+			for (long i = _startDisplayFrame;i< _endDisplayFrame; i++)
 			{
 				if (_timeline.TryGetFrame(i, out var input))
 				{
@@ -135,35 +160,10 @@ namespace UI
 			chip.SetManager(this);
 			return chip;
 		}
-		
-		public void SetStartAndEnd(long newStart, long newEnd)
-		{
-			if (newStart != StartDisplayFrame || newEnd != EndDisplayFrame)
-			{
-				StartDisplayFrame = newStart;
-				EndDisplayFrame = newEnd;
-				UpdateScrollbarByValues();
-				UpdateVisuals();
-			}
-		}
-
-		private void UpdateScrollbarByValues()
-		{
-			//todo: none of this works
-			var size = _timeline.LastFrame();
-			if (size == 0)
-			{
-				_scrollbar.size = 1;
-				return;
-			}
-			var visibleWidth = (EndDisplayFrame - StartDisplayFrame) / size;
-			_scrollbar.size = visibleWidth;
-			var middleFrame = StartDisplayFrame + (StartDisplayFrame-EndDisplayFrame)/2;
-			_scrollbar.value = 1-(middleFrame / (float)size);
-		}
 
 		private void OnScrollbarValueChanged(float val)
 		{
+			Debug.Log($"Timeline Scrollbar set to {val}");
 			// var size = _timeline.LastFrame();
 			// _scrollbar.value = size*
 		}
@@ -173,9 +173,9 @@ namespace UI
 			return Chips[0];
 		}
 
-		public UIFrameChip GetRightEdgeChip()
+		public UIFrameChip GetCurrentEdgeChip()
 		{
-			return  Chips[^1];
+			return  Chips[(int)HalfFrameCount];
 		}
 	}
 }

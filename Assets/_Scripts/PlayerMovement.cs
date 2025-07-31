@@ -4,7 +4,7 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private GameInput gameInput;
+    [SerializeField] private PlatformerGameInput gameInput;
     [SerializeField] private Camera playerCamera;
 
     [Header("Movement Settings")]
@@ -40,7 +40,7 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody>();
 
         if (gameInput == null)
-            gameInput = FindAnyObjectByType<GameInput>();
+            gameInput = FindAnyObjectByType<PlatformerGameInput>();
         if (playerCamera == null)
             playerCamera = Camera.main;
 

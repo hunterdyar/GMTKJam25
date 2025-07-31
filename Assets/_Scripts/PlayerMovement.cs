@@ -33,7 +33,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 wallNormal;
 
     private Rigidbody rb;
-    private Vector3 inputDirection;
+    [HideInInspector] public Vector3 inputDirection;
     private bool isGrounded;
     private bool jump;
     void Awake()
@@ -62,7 +62,6 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnInput(long frame, GameInput input)
     {
-        // Debug.Log(input.GetDir());
         jump = input.JumpButton != null && input.JumpButton.IsPressed(frame);
         Vector2 dir = (input.ArrowButton != null && input.ArrowButton.IsPressed(frame)) ? input.ArrowButton.GetDir() : Vector2.zero;
         dir.Normalize();
@@ -103,6 +102,8 @@ public class PlayerMovement : MonoBehaviour
 
             jumpBufferTimer = -1f;
         }
+        
+        PhysicsTick();
     }
 
     private Vector3 InputToWorld(Vector2 dir)
@@ -112,7 +113,7 @@ public class PlayerMovement : MonoBehaviour
         return input.normalized;
     }
     
-    void FixedUpdate()
+    void PhysicsTick()
     {
         TryStepUp();
 

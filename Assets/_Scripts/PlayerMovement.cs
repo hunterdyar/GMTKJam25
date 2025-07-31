@@ -62,6 +62,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnInput(long frame, GameInput input)
     {
+        // Debug.Log(input.GetDir());
         jump = input.JumpButton != null && input.JumpButton.IsPressed(frame);
         Vector2 dir = (input.ArrowButton != null && input.ArrowButton.IsPressed(frame)) ? input.GetDir() : Vector2.zero;
         inputDirection = InputToWorld(dir);

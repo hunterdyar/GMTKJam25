@@ -14,6 +14,8 @@ namespace GMTK
         private GameInput _gameInput;
         [CanBeNull] private ButtonEvent _currentJumpEvent;
         [CanBeNull] private ButtonEvent _currentMoveEvent;
+        private Vector2 _inDir;
+        private Buttons _inButtons;
         private void Awake()
         {
             _runner = GetComponent<TimelineRunner>();
@@ -49,20 +51,20 @@ namespace GMTK
                     }
                     _currentJumpEvent.ReleaseFrame = _runner.PendingFrame;
                     _gameInput.JumpButton = _currentJumpEvent;
-                    _runner.Timeline.SetInputOnNextTickedFrame(_gameInput);
+                    // _runner.Timeline.SetInputOnNextTickedFrame(_gameInput);//don't need to call this twice?
                     _currentJumpEvent = null;
                 }
-                
-                var inDir = _moveAction.action.ReadValue<Vector2>();
-                var inButton = DirToMovement(inDir);
-                if (inButton > 0)
+
+                _inDir = _moveAction.action.ReadValue<Vector2>();
+                _inButtons = DirToMovement(_inDir);
+                if (_inButtons > 0)
                 {
                     if (_currentMoveEvent == null)
                     {
-                        //we press direction this frame
+                        //we first pressed a direction this frame
                         _currentMoveEvent = new ButtonEvent()
                         {
-                            Button = inButton,
+                            Button = _inButtons,
                             PressFrame = _runner.PendingFrame
                         };
                         _gameInput.ArrowButton = _currentMoveEvent;
@@ -70,16 +72,21 @@ namespace GMTK
                     else
                     {
                         //already pressing a direction, we rotated the stick. Which is a release and new press.
-                        if (_currentMoveEvent.Button != inButton)
+                        if (_currentMoveEvent.Button != _inButtons)
                         {
                             //changed a direction!
                             ReleaseMoveEvent();
                             _currentMoveEvent = new ButtonEvent()
                             {
-                                Button = inButton,
+                                Button = _inButtons,
                                 PressFrame = _runner.PendingFrame
                             };
                             _gameInput.ArrowButton = _currentMoveEvent;
+                        }
+                        else
+                        {
+                            //we are continuing to press the button.
+                            Debug.Assert(_currentMoveEvent.Button != Buttons.None && _currentMoveEvent.Button != Buttons.Jump);
                         }
                     }
                 }
@@ -107,7 +114,9 @@ namespace GMTK
                 _gameInput.ArrowButton = _currentMoveEvent;
                 _runner.Timeline.SetInputOnNextTickedFrame(_gameInput);
                 _currentMoveEvent = null;
+                _gameInput.ArrowButton = null;//This was the bug! this line missing!
             }
+            
         }
         
 
@@ -116,9 +125,27 @@ namespace GMTK
         {
             var h = Mathf.RoundToInt(dir.normalized.x);
             var v = Mathf.RoundToInt(dir.normalized.y);
-            var hb = h == 1 ? Buttons.Right : h == -1 ? Buttons.Left : 0;
-            var vb = v == 1 ? Buttons.Right : v == -1 ? Buttons.Left : 0;
-            return hb | vb;
+            Buttons b = 0;
+            if (h == 1)
+            {
+                b |= Buttons.Right;
+            }
+
+            if (h == -1)
+            {
+                b |= Buttons.Left;
+            }
+
+            if (v == 1)
+            {
+                b |= Buttons.Up;
+            }
+
+            if (v == -1)
+            {
+                b |= Buttons.Down;
+            }
+            return b;
         }
     }
 }

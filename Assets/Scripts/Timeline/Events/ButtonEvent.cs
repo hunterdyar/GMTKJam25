@@ -5,7 +5,7 @@ namespace GMTK
 	//stored on the heap!
 	public class ButtonEvent : IEquatable<ButtonEvent>
 	{
-		public Buttons Button;
+		public Buttons Button = Buttons.None;
 		public long PressFrame = -1;
 		public long ReleaseFrame = -1;
 

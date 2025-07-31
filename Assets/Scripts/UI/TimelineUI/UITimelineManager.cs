@@ -132,7 +132,7 @@ namespace UI
 							VisibleButtonEvents.Add(input.JumpButton);
 						}
 					}
-
+					
 					if (input.ArrowButton != null)
 					{
 						if (!VisibleButtonEvents.Contains(input.ArrowButton))

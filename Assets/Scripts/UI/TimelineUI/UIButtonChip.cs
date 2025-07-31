@@ -2,7 +2,6 @@
 using GMTK;
 using JetBrains.Annotations;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace UI
 {
@@ -72,6 +71,8 @@ namespace UI
 				var p = left.parent as RectTransform;
 				r.anchoredPosition = new Vector2(Mathf.Lerp(left.anchoredPosition.x-left.rect.width/2, right.anchoredPosition.x+right.rect.width/2, 0.5f),r.anchoredPosition.y) - new Vector2(p.rect.width/2,0);
 				r.sizeDelta = new Vector2(right.anchoredPosition.x-left.anchoredPosition.x,r.sizeDelta.y);
+			}else{
+				
 			}
 			
 			//change icon for when offleft and offright are true.

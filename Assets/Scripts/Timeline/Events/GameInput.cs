@@ -19,6 +19,7 @@ public struct GameInput
 	{
 		return (JumpButton != null) || (ArrowButton != null);
 	}
+
 	
 }
 

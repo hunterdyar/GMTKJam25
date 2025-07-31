@@ -86,11 +86,8 @@ namespace GMTK
 			
 			if (_inputsMap.TryGetValue(_playbackFrame, out GameInput input))
 			{
-				if (_pending.Any())
-				{
-					//replace! bad but hey.
-					_inputsMap[_playbackFrame] = _pending;
-				}
+				input = MergeInputs(_playbackFrame, input,  _pending);
+				_inputsMap[_playbackFrame] = input;
 			}
 			else
 			{
@@ -103,6 +100,136 @@ namespace GMTK
 			TickFrame(_playbackFrame);
 			OnCurrentDisplayFrameChanged?.Invoke(_playbackFrame);
 			_pending = GameInput.None;
+		}
+
+		//Merge B into A. Set any releases to playbackFrame. We should be able to discard b after this.
+		private GameInput MergeInputs(long playbackFrame, GameInput a, GameInput b)
+		{
+			//take 2: overwrite
+			if (a.JumpButton == null)
+			{
+				a.JumpButton = b.JumpButton;
+				b.JumpButton = null;
+				return a;
+			}
+
+			if (b.JumpButton == null || !b.JumpButton.IsPressed(playbackFrame))
+			{
+				if (a.JumpButton.ReleaseFrame >= playbackFrame)
+				{
+					if (a.JumpButton.PressFrame < playbackFrame)
+					{
+						var whenrelease = playbackFrame - 1;
+						if (whenrelease > a.JumpButton.PressFrame)
+						{
+							a.JumpButton.ReleaseFrame = whenrelease;
+						}
+						else
+						{
+							a.JumpButton.ReleaseFrame = a.JumpButton.PressFrame;//invalidate jic.
+							a.JumpButton = null;
+						}
+					}else if(a.JumpButton.PressFrame == playbackFrame)
+					{
+						var whenpress = playbackFrame + 1;
+						if (whenpress < a.JumpButton.ReleaseFrame)
+						{
+							a.JumpButton.PressFrame = whenpress;
+						}
+						else
+						{
+							//delete
+							a.JumpButton.PressFrame = whenpress;//invalidate jic. the 'isPressed' function will return false in this case.
+							a.JumpButton = null;
+						}
+						return a;
+					}
+				}
+			}
+			else
+			{
+				//if presing b...
+			}
+			
+			
+			//were not pressing, now we are. (and if b is null, it's still fine, still not pressing the button.) also bounds check a, as - if we truncated a previous input, then it may not be valid for this frame anymore so ignore.
+			if (a.JumpButton == null || (a.JumpButton.ReleaseFrame < playbackFrame && a.JumpButton.ReleaseFrame != -1) || a.JumpButton.PressFrame == -1 || a.JumpButton.PressFrame > playbackFrame )
+			{
+				a.JumpButton = b.JumpButton;
+				b.JumpButton = null;
+			}
+			else
+			{
+				//there is a press with a, and we are causing a release.
+				if (b.JumpButton == null || b.JumpButton.PressFrame <= playbackFrame && (b.JumpButton.ReleaseFrame == -1 || b.JumpButton.ReleaseFrame > playbackFrame) && (a.JumpButton.ReleaseFrame != -1 && a.JumpButton.ReleaseFrame >= _playbackFrame))
+				{
+					//update the "previous" press to release.
+					if (a.JumpButton.PressFrame < playbackFrame - 1)
+					{
+						a.JumpButton.ReleaseFrame = playbackFrame - 1;
+					}
+					else
+					{
+						//we perfectly caused an overlap, destroy a, replace with b.
+						a.JumpButton = null;
+					}
+
+					//create a new press. or non-press, or whatever.
+					a.JumpButton = b.JumpButton;
+					b.JumpButton = null;
+				}
+				else
+				{
+					if (a.JumpButton.PressFrame > b.JumpButton.ReleaseFrame && b.JumpButton.ReleaseFrame != -1)
+					{
+						//exit... these don't overlap?
+					}else if (b.JumpButton.ReleaseFrame != -1 && b.JumpButton.ReleaseFrame < playbackFrame)
+					{
+						//exit, these... don't overlap?
+					}else if (a.JumpButton.Button == b.JumpButton.Button)
+					{
+						//do nothing, more or less. Catch edge cases for press+press back to back.
+						if (b.JumpButton.PressFrame < a.JumpButton.PressFrame)
+						{
+							a.JumpButton.PressFrame = b.JumpButton.PressFrame;
+						}
+
+						if (b.JumpButton.ReleaseFrame == -1 || b.JumpButton.ReleaseFrame > a.JumpButton.ReleaseFrame)
+						{
+							a.JumpButton.ReleaseFrame = b.JumpButton.ReleaseFrame;
+						}
+
+						b.JumpButton = null;
+					}
+					else
+					{
+						//we press a button and a is not pressed, or vise-versa.
+						if (b.JumpButton.Button == Buttons.Jump)
+						{
+							Debug.Assert(a.JumpButton.Button == Buttons.None);
+							a.JumpButton = b.JumpButton;
+							b.JumpButton = null;
+						} else if (b.JumpButton.Button == Buttons.None)
+						{
+							Debug.Assert(a.JumpButton.Button == Buttons.Jump);
+							a.JumpButton.ReleaseFrame = _playbackFrame-1;
+							a.JumpButton = b.JumpButton;
+							b.JumpButton = null;
+						}
+					}
+				}
+				
+			}
+
+			if (a.ArrowButton == null)
+			{
+				a.ArrowButton = b.ArrowButton;
+				b.ArrowButton = null;
+			}
+			
+			
+
+			return a;
 		}
 
 		public void SetInputOnNextTickedFrame(GameInput input)

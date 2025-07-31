@@ -28,9 +28,17 @@ namespace UI
 		public void UpdateVisuals()
 		{
 			long realFrame = _timelineManager.StartDisplayFrame + _relativeIndex;
-			if (realFrame > _timelineManager.EndDisplayFrame || realFrame < _timelineManager.StartDisplayFrame)
+			if (realFrame > _timelineManager.EndDisplayFrame || realFrame < _timelineManager.StartDisplayFrame )
 			{
-				_image.enabled = false;
+				// _image.enabled = false;
+				_image.color = Color.black;
+
+				return;
+			}
+
+			if (realFrame < 0 || realFrame > _timelineManager.Timeline.LastFrame())
+			{
+				_image.color = Color.black;
 				return;
 			}
 			if (_timelineManager.Timeline.TryGetFrame(realFrame, out var inputs))

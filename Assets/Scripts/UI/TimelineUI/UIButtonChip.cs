@@ -61,6 +61,7 @@ namespace UI
 			{
 				offRightEdge = true;
 				//if recording, this needs to be _manager.GetCurrent()...
+				
 				rightChip = _manager.GetRightEdgeChip();
 				
 			}

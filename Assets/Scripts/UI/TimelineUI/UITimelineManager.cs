@@ -30,9 +30,12 @@ namespace UI
 		public List<UIButtonChip> ButtonChips = new List<UIButtonChip>();
 
 		private UICurrentFrameChip _currentFrameChip;
+		private UIFrameChip _rightEdgeChip;
 		private long _currentViewedDisplayFrame;
 
 		private long HalfFrameCount;
+	
+		private bool _isRecording;
 		private void Awake()
 		{
 			HalfFrameCount = TimelineLength / 2;
@@ -58,11 +61,13 @@ namespace UI
 		{
 			Timeline.OnInput += OnInput;
 			Timeline.OnCurrentDisplayFrameChanged += OnCurrentDisplayFrameChanged;
+			TimelineRunner.OnPlaybackChange += OnIsRecordingChange;
 		}
 
 		private void OnDisable()
 		{
 			Timeline.OnCurrentDisplayFrameChanged -= OnCurrentDisplayFrameChanged;
+			TimelineRunner.OnPlaybackChange -= OnIsRecordingChange;
 		}
 
 		private void OnCurrentDisplayFrameChanged(long frame)
@@ -179,6 +184,18 @@ namespace UI
 			// _scrollbar.value = size*
 		}
 
+		private void OnIsRecordingChange(bool isRecording)
+		{
+			if (isRecording)
+			{
+				_rightEdgeChip = Chips[(int)HalfFrameCount];
+			}
+			else
+			{
+				_rightEdgeChip = Chips[^1];
+			}
+		}
+
 		public UIFrameChip GetLeftEdgeChip()
 		{
 			return Chips[0];
@@ -191,7 +208,7 @@ namespace UI
 
 		public UIFrameChip GetRightEdgeChip()
 		{
-			return Chips[^1];
+			return _rightEdgeChip;
 		}
 	}
 }

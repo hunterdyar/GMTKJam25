@@ -2,12 +2,9 @@ using UnityEngine;
 
 public class BatteryPickup : MonoBehaviour
 {
-    [Header("Floating Settings")]
-    [SerializeField] private float floatAmplitude = 0.25f; // How far it floats up and down
-    [SerializeField] private float floatFrequency = 1f;     // How fast it floats
-
-    [Header("Rotation Settings")]
-    [SerializeField] private float rotationSpeed = 45f; // Degrees per second
+    [SerializeField] private float floatAmplitude = 0.25f;
+    [SerializeField] private float floatFrequency = 1f;
+    [SerializeField] private float rotationSpeed = 45f;
 
     private Vector3 startPosition;
 
@@ -18,11 +15,17 @@ public class BatteryPickup : MonoBehaviour
 
     void Update()
     {
-        // Floating effect
         float newY = startPosition.y + Mathf.Sin(Time.time * floatFrequency) * floatAmplitude;
         transform.position = new Vector3(transform.position.x, newY, transform.position.z);
-
-        // Rotation effect
         transform.Rotate(Vector3.up * rotationSpeed * Time.deltaTime, Space.World);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            TimerManager.Instance.BatteryCollected();
+            Destroy(gameObject);
+        }
     }
 }

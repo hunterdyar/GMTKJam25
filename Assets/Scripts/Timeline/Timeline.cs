@@ -9,7 +9,7 @@ namespace GMTK
 	public class Timeline : ScriptableObject
 	{
 		public static Action<long> OnCurrentDisplayFrameChanged;
-		public static Action<long, GameInput> OnInput;
+		public static Action<long, GameInput, bool> OnInput;
 		public long CurrentDisplayedFrame => _playbackFrame;
 		private long _playbackFrame;
 		
@@ -59,8 +59,14 @@ namespace GMTK
 			}
 			
 			//restore to next available checkpoint.
-			var lkg = _checkpoints.Where(x => x.Frame <= frame && x.Frame < _dirtyFrame).OrderByDescending(x => x.Frame).First();
+			var lkg = _checkpoints.Where(x => x.Frame < frame && x.Frame < _dirtyFrame).OrderByDescending(x => x.Frame).First();
 			lkg.RestoreCheckpoint();
+			if (lkg.Frame == frame)
+			{
+				//the <= in the Where is an = so we always do a TickFrame
+				//this is so we update visuals. it's a hack! could be better!
+				//return;
+			}
 			for (long i = lkg.Frame; i < frame; i++)
 			{
 				if (i % 10 == 0)
@@ -68,12 +74,12 @@ namespace GMTK
 					CreateCheckpointAtCurrent();
 				}
 				_playbackFrame = i;
-				TickFrame(i);
+				TickFrame(i, true);
 			}
 			
 			//now we are caught up to this frame, let's play this frame back out.
 			_playbackFrame = frame;
-			TickFrame(frame);
+			TickFrame(frame, false);
 			OnCurrentDisplayFrameChanged?.Invoke(frame);
 			CreateCheckpointAtCurrent();
 		}
@@ -120,7 +126,7 @@ namespace GMTK
 				}
 			}
 
-			TickFrame(_playbackFrame);
+			TickFrame(_playbackFrame, false);
 			OnCurrentDisplayFrameChanged?.Invoke(_playbackFrame);
 			_pending = GameInput.None;
 		}
@@ -261,11 +267,15 @@ namespace GMTK
 			_pending = input;
 		}
 
-		public void TickFrame(long frame)
+		public void TickFrame(long frame, bool instant)
 		{
 			if (_inputsMap.TryGetValue(frame, out var input))
 			{
-				BroadcastEvent(_playbackFrame, input);
+				BroadcastEvent(_playbackFrame, input, instant);
+			}
+			else
+			{
+				BroadcastEvent(_playbackFrame, GameInput.None, instant);
 			}
 
 			Physics.Simulate(Time.fixedUnscaledDeltaTime);
@@ -283,9 +293,9 @@ namespace GMTK
 			_checkpoints.Add(c);
 		}
 
-		private void BroadcastEvent(long frame, GameInput input)
+		private void BroadcastEvent(long frame, GameInput input, bool instant)
 		{
-			OnInput?.Invoke(frame, input);
+			OnInput?.Invoke(frame, input, instant);
 		}
 
 		public void AddTimelineListener(TimelineListener timelineListener)

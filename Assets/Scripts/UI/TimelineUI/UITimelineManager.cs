@@ -46,8 +46,8 @@ namespace UI
 			{
 				_currentFrameChip.Init(this);
 			}
-			_startDisplayFrame = -HalfFrameCount;
-			_endDisplayFrame = HalfFrameCount;
+			_startDisplayFrame = -HalfFrameCount-TimelineLength;
+			_endDisplayFrame = HalfFrameCount-TimelineLength;
 		}
 
 		void Start()
@@ -79,11 +79,13 @@ namespace UI
 			//this frame should be centered.
 			if (_currentViewedDisplayFrame != frame)
 			{
-				UpdateVisuals();
+				//UpdateVisuals();
 			}
 		}
-		private void OnInput(long frame, GameInput input)
+		private void OnInput(long frame, GameInput input, bool instant)
 		{
+			Debug.Log(frame +" "+VisibleButtonEvents.Count);
+			//frames can be created at the current position
 			if (input.JumpButton != null)
 			{
 				if (!VisibleButtonEvents.Contains(input.JumpButton))
@@ -91,7 +93,7 @@ namespace UI
 					AddVisibleButton(input.JumpButton);
 				}
 			}
-
+			
 			if (input.ArrowButton != null)
 			{
 				if (!VisibleButtonEvents.Contains(input.ArrowButton))
@@ -99,20 +101,15 @@ namespace UI
 					AddVisibleButton(input.ArrowButton);
 				}
 			}
-			//change color of timeline chip.
-			
-			// if (frame >= StartDisplayFrame && frame <= EndDisplayFrame)
-			// {
-			// 	int index = (int)(frame - StartDisplayFrame);
-			// 	//uh?
-			// 	if (index >= 0 && index < Chips.Count)
-			// 	{
-			// 		Chips[index].UpdateVisuals();
-			// 	}
-			// }
 
 			//update button things.
-			UpdateVisuals();
+			 if (!instant)
+			 {
+			 	UpdateVisuals();
+			 }
+
+			//UpdateVisuals();
+
 		}
 
 		public void UpdateVisuals()
@@ -141,23 +138,24 @@ namespace UI
 					//
 					// OnFrameExitView(nextStart + i, delta);
 					// OnFrameEnterView(_endDisplayFrame - i, delta);
-					
-					OnFrameExitView(_startDisplayFrame + i, delta);
-					OnFrameEnterView(nextEnd - i, delta);
+					OnFrameExitView(_endDisplayFrame - i, delta);
+					OnFrameEnterView(nextEnd + i, delta);
 				}
 				
 			}else if (delta < 0)
 			{
+
 				if (delta < -TimelineLength)
 				{
 					delta = -TimelineLength;
 				}
+
 				for (int i = 0; i < -delta; i++)
 				{
 					//we moved the timeline to the right (down to earlier frames)
 					//we are moving the 'window' to the left (drag left)
-					OnFrameEnterView(nextStart + i, delta);
-					OnFrameExitView(_endDisplayFrame - i, delta);
+					OnFrameExitView(nextStart + i, delta);
+					OnFrameEnterView(_endDisplayFrame - i, delta);
 				}
 			}
 			
@@ -192,9 +190,17 @@ namespace UI
 			{
 				if (input.JumpButton != null)
 				{
-					if (!VisibleButtonEvents.Contains(input.JumpButton))
+					if ((frame == input.JumpButton.ReleaseFrame && delta < 0)
+					    || (frame == input.JumpButton.PressFrame && delta > 0))
 					{
-						AddVisibleButton(input.JumpButton);
+						if (!VisibleButtonEvents.Contains(input.JumpButton))
+						{
+							AddVisibleButton(input.JumpButton);
+						}
+					}
+					else
+					{
+						Debug.LogWarning("input jump button is off-frame.");
 					}
 				}
 
@@ -285,6 +291,7 @@ namespace UI
 		{
 			if (_buttonChips.TryGetValue(be, out var chip))
 			{
+				chip.gameObject.SetActive(true);
 				return chip;
 			}
 			

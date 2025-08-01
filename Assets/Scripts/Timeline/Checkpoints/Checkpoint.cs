@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace GMTK
 {
@@ -20,6 +21,7 @@ namespace GMTK
 
 		public void RestoreCheckpoint()
 		{
+			Debug.Log($"Restore Checkpoint {Frame}");
 			foreach (var stored in _checkpointData)
 			{
 				stored.RestoreToCheckpoint();

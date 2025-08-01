@@ -85,7 +85,7 @@ namespace GMTK
 				for (int i = lkg.Frame + 1; i <= frame; i++)
 				{
 					_playbackFrame = i;
-					TickFrame(i, i == frame, i % 10 == 0);
+					TickFrame(i, i == frame, false);
 				}
 			}
 
@@ -280,7 +280,7 @@ namespace GMTK
 
 		public void TickFrame(int frame, bool instant, bool createCheckpoint = false)
 		{
-			//Debug.Log("tick "+frame);
+			Debug.Log("tick "+frame);
 			if (frame == _lastTickedFrame)
 			{
 				Debug.LogWarning("are you sure about that? ");
@@ -294,7 +294,7 @@ namespace GMTK
 
 			var input = _inputHistory[frame];
 			BroadcastEvent(frame, input, instant);
-			Physics.Simulate(Time.fixedUnscaledDeltaTime);
+			Physics.Simulate(Time.fixedDeltaTime);
 			_lastFrame = frame > _lastFrame ? frame : _lastFrame;
 			_lastTickedFrame = frame;
 

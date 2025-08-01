@@ -1160,8 +1160,16 @@ PrefabInstance:
       value: Slope
       objectReference: {fileID: 0}
     - target: {fileID: 4521164727703120420, guid: 792b1d6850d15ce40ac0ee0b29520e4c, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.95
+      objectReference: {fileID: 0}
+    - target: {fileID: 4521164727703120420, guid: 792b1d6850d15ce40ac0ee0b29520e4c, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4521164727703120420, guid: 792b1d6850d15ce40ac0ee0b29520e4c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.65
+      value: -5.46
       objectReference: {fileID: 0}
     - target: {fileID: 4521164727703120420, guid: 792b1d6850d15ce40ac0ee0b29520e4c, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1169,7 +1177,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4521164727703120420, guid: 792b1d6850d15ce40ac0ee0b29520e4c, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 27.972979
+      value: 29.74
       objectReference: {fileID: 0}
     - target: {fileID: 4521164727703120420, guid: 792b1d6850d15ce40ac0ee0b29520e4c, type: 3}
       propertyPath: m_LocalRotation.w

@@ -22,9 +22,10 @@ namespace GMTK
 		private long _lastFrame;
 		private long _dirtyFrame;
 		public long MaxFrame;
-
+		private long _lastTickedFrame;
 		public void Init(long max)
 		{
+			_lastTickedFrame = -2;
 			MaxFrame = max;
 			_playbackFrame = -1;
 			_lastFrame = 0;
@@ -264,6 +265,18 @@ namespace GMTK
 
 		public void TickFrame(long frame, bool instant)
 		{
+			Debug.Log("tick "+frame);
+			if (frame == _lastTickedFrame)
+			{
+				Debug.LogWarning("are you sure about that? ");
+				return;
+			}
+
+			if (frame > MaxFrame)
+			{
+				return;
+			}
+			
 			if (_inputsMap.TryGetValue(frame, out var input))
 			{
 				BroadcastEvent(_playbackFrame, input, instant);
@@ -275,10 +288,12 @@ namespace GMTK
 
 			Physics.Simulate(Time.fixedUnscaledDeltaTime);
 			_lastFrame = frame > _lastFrame ? frame : _lastFrame;
+			_lastTickedFrame = frame;
 		}
 
 		public void CreateCheckpointAtCurrent()
 		{
+			Debug.Log($"Creating Checkpoint {_playbackFrame}");
 			var c = new Checkpoint(_playbackFrame);
 			foreach (var listener in _listeners)
 			{

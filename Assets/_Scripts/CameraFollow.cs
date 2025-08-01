@@ -8,6 +8,8 @@ public class CameraFollow : MonoBehaviour
 
     [Header("Controls")] public InputActionReference _lookLeft;
     public InputActionReference _lookRight;
+    public bool FlipDir;
+
     [Header("Camera Offset")] public bool Only4Dirs;
     public float offsetDistance = 10;
     public float followSpeed = 5f;
@@ -75,12 +77,25 @@ public class CameraFollow : MonoBehaviour
     {
         if (_lookLeft.action.WasPerformedThisFrame())
         {
-            RotateCameraLeft();
+            if (FlipDir)
+            {
+                RotateCameraRight();
+            }else
+            {
+                RotateCameraLeft();
+            }
         }
 
         if (_lookRight.action.WasPerformedThisFrame())
         {
-            RotateCameraRight();
+            if (FlipDir)
+            {
+                RotateCameraLeft();
+            }
+            else
+            {
+                RotateCameraRight();
+            }
         }
     }
     void LateUpdate()

@@ -29,13 +29,37 @@ namespace GMTK
 		public RunnerControlState State => _state;
 		[SerializeField]
 		private RunnerControlState _state = RunnerControlState.Playback;
+
+		private GameManager _gameManager;
 		private void Awake()
 		{
+			_gameManager = GetComponent<GameManager>();
 			_debugCreateCheckpoint.Enable();
 			_debugGoToTestFrame.Enable();
 			_state = RunnerControlState.Playback;
 			//this is temp (FAMOUSLASTWORDS)
 			_uiTimeline = GameObject.FindFirstObjectByType<UITimelineManager>();
+		}
+
+		void OnEnable()
+		{
+			GameManager.OnGameStateChange += OnGameStateChange;
+		}
+
+		void OnDisable()
+		{
+			GameManager.OnGameStateChange -= OnGameStateChange;
+		}
+		private void OnGameStateChange(GameState gameState)
+		{
+			if (gameState == GameState.AllCollected || gameState == GameState.TimeIsUp)
+			{
+				PauseIfPlaying(true);
+				if (_state == RunnerControlState.Recording)
+				{
+					ToggleRecordState(true);
+				}
+			}
 		}
 
 		private void Start()
@@ -69,13 +93,25 @@ namespace GMTK
 			}
 		}
 
-		public void PlayPauseToggle()
+		/// <param name="force">Ignore Current game state condition</param>
+		public void PlayPauseToggle(bool force = false)
 		{
-			Playing = !Playing;
-			OnPlaybackChange?.Invoke(Playing);
+			if (force || (_gameManager.GameState != GameState.TimeIsUp && _gameManager.GameState != GameState.AllCollected))
+			{
+				Playing = !Playing;
+				OnPlaybackChange?.Invoke(Playing);
+			}
 		}
-		public void ToggleRecordState()
+		public void ToggleRecordState(bool force = false)
 		{
+			if ((_gameManager.GameState == GameState.TimeIsUp || _gameManager.GameState == GameState.AllCollected))
+			{
+				if (!force)
+				{
+					return;
+				}
+			}
+
 			if (_state == RunnerControlState.Playback)
 			{
 				//todo: fine for now, enter playback when not recording.
@@ -99,11 +135,11 @@ namespace GMTK
 			OnStateChange?.Invoke(_state);
 		}
 
-		public void PauseIfPlaying()
+		public void PauseIfPlaying(bool force = false)
 		{
-			if (Playing)
+			if (Playing || force)
 			{
-				PlayPauseToggle();
+				PlayPauseToggle(force);
 			}
 		}
 	}

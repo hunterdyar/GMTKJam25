@@ -48,15 +48,19 @@ namespace UI
 			}
 			_startDisplayFrame = -HalfFrameCount-TimelineLength;
 			_endDisplayFrame = HalfFrameCount-TimelineLength;
-		}
-
-		void Start()
-		{
+			
+			//
 			Chips = new List<UIFrameChip>();
 			for (int i = 0; i < TimelineLength; i++)
 			{
 				Chips.Add(CreateFrameChip(i));
 			}
+			
+		}
+
+		void Start()
+		{
+			
 			
 			OnPositionUpdate?.Invoke();
 		}

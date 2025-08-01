@@ -2,12 +2,10 @@
 using GMTK;
 using UnityEngine;
 
-namespace DefaultNamespace
+namespace GMTK
 {
 	public class Interactable : TimelineListener
 	{
-		public Timeline _timeline;
-
 		public bool HasBeenInteractedWith;
 		public bool IsInteracting;
 		//other?
@@ -17,45 +15,57 @@ namespace DefaultNamespace
 		{
 			base.Awake();
 			Timeline.OnInput += OnInput;
-			
+			_box = GetComponent<BoxCollider>();
+		}
+
+		private void OnEnable()
+		{
+			Timeline.OnInput += OnInput;
+		}
+
+		private void OnDisable()
+		{
+			Timeline.OnInput -= OnInput;
 		}
 
 		private void OnInput(long arg1, GameInput arg2, bool arg3)
 		{
 			//if overlap.... set some bool.
+			bool noPlayer = true;
 			var size = Physics.OverlapBoxNonAlloc(_box.bounds.center, _box.bounds.extents, _castResults);
 			for (int i = 0; i < size; i++)
 			{
 				var player = _castResults[i]?.GetComponent<PlayerMovement>();
 				if (player != null)
 				{
+					noPlayer = false;
 					if (!HasBeenInteractedWith)
 					{
 						HasBeenInteractedWith = true;
-						OnFirstInteraction();
+						OnFirstInteraction(player);
 					}
 
 					if (!IsInteracting)
 					{
 						IsInteracting = true;
-						OnInteraction();
+						OnInteraction(player);
 					}
+					break;
 				}
-				else
-				{
-					IsInteracting = false;
-				}
+			}
 
-				break;
+			if (noPlayer)
+			{
+				IsInteracting = false;
 			}
 		}
 
-		public virtual void OnFirstInteraction()
+		public virtual void OnFirstInteraction(PlayerMovement player)
 		{
 			//... 	
 		}
 
-		public virtual void OnInteraction()
+		public virtual void OnInteraction(PlayerMovement player)
 		{
 			
 		}

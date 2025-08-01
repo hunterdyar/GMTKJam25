@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class UIScrubController : MonoBehaviour
 {
+    [SerializeField] private TimelineRunner _timelineRunner;
     private Timeline Timeline => _manager.Timeline;
     [SerializeField] private UITimelineManager _manager;
     [SerializeField] private Button JumpLeftButton;
@@ -26,6 +27,10 @@ public class UIScrubController : MonoBehaviour
         StepLeftButton.onClick.AddListener(StepLeft);
         StepRightButton.onClick.AddListener(StepRight);
         JumpRightButton.onClick.AddListener(JumpRight);
+        if (_timelineRunner == null)
+        {
+            _timelineRunner = GameObject.FindFirstObjectByType<TimelineRunner>();
+        }
     }
 
     void Update()
@@ -58,29 +63,29 @@ public class UIScrubController : MonoBehaviour
     public void Scrub(long delta)
     {
         Debug.Assert(_isScrubbing);
-        _manager.Timeline.GoToFrame(_manager.Timeline.CurrentDisplayedFrame + (delta));
+        _timelineRunner.ScrubJumpToFrame(_manager.Timeline.CurrentDisplayedFrame + (delta));
 
     }
 
     public void JumpLeft()
     {
-        Timeline.GoToFrame(Timeline.CurrentDisplayedFrame - 100);
+        _timelineRunner.ScrubJumpToFrame(Timeline.CurrentDisplayedFrame - 50);
     }
 
     public void StepLeft()
     {
         Debug.Log("StepLeft");
-        Timeline.GoToFrame(Timeline.CurrentDisplayedFrame - 1);
+        _timelineRunner.ScrubJumpToFrame(Timeline.CurrentDisplayedFrame - 1);
     }
 
     public void JumpRight()
     {
-        Timeline.GoToFrame(Timeline.CurrentDisplayedFrame + 100);
+        _timelineRunner.ScrubJumpToFrame(Timeline.CurrentDisplayedFrame + 50);
     }
 
     public void StepRight()
     {
         Debug.Log("StepRight");
-        Timeline.GoToFrame(Timeline.CurrentDisplayedFrame + 1);
+        _timelineRunner.ScrubJumpToFrame(Timeline.CurrentDisplayedFrame + 1);
     }
 }

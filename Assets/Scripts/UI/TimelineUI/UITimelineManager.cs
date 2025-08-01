@@ -170,7 +170,9 @@ namespace UI
 			{
 				if (!_buttonChips.ContainsKey(vb))
 				{
-					Debug.LogWarning(vb.ToString());
+					Debug.LogWarning("edge case? why no button chip?"+ vb.ToString());
+					var chip = GetButtonChip(vb);
+					_buttonChips.Add(vb, chip);
 				}
 				else
 				{

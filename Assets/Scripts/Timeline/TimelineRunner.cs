@@ -117,9 +117,11 @@ namespace GMTK
 				//todo: fine for now, enter playback when not recording.
 				if (!Playing)
 				{
-					PlayPauseToggle();
+					PlayPauseToggle(force);
 				}
 				_state = RunnerControlState.Recording;
+				OnStateChange?.Invoke(_state);
+				return;
 			}else if (_state == RunnerControlState.Recording)
 			{
 				Timeline.ForceReleaseInput(Timeline.CurrentDisplayedFrame);
@@ -130,9 +132,15 @@ namespace GMTK
 
 				//todo we should only do this if we have "caught up" to the last frame?
 				PauseIfPlaying();
+				OnStateChange?.Invoke(_state);
+				return;
 			}
+		}
 
-			OnStateChange?.Invoke(_state);
+		public void ScrubJumpToFrame(long frame)
+		{
+			StopRecordingIfRecording();
+			Timeline.GoToFrame(frame);
 		}
 
 		public void PauseIfPlaying(bool force = false)
@@ -140,6 +148,17 @@ namespace GMTK
 			if (Playing || force)
 			{
 				PlayPauseToggle(force);
+			}
+		}
+		
+		private void StopRecordingIfRecording()
+		{
+			if (_state == RunnerControlState.Recording)
+			{
+				Timeline.ForceReleaseInput(Timeline.CurrentDisplayedFrame);
+				//i know we don't actually need the else but I am anticipating future states.
+				_state = RunnerControlState.Playback;
+				OnStateChange?.Invoke(_state);
 			}
 		}
 	}

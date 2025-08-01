@@ -132,47 +132,46 @@ namespace GMTK
 		}
 
 		//Merge B into A. Set any releases to playbackFrame. We should be able to discard b after this.
-		//todo: arrows... (uhg copy/paste this mess)
-		private GameInput MergeInputs(long playbackFrame, GameInput a, GameInput b)
+
+		private void MergeButtonEvent(long playbackFrame, ref ButtonEvent a, ref ButtonEvent b)
 		{
-			//take 2: overwrite
-			if (a.JumpButton == null)
+			if (a == null)
 			{
-				a.JumpButton = b.JumpButton;
-				b.JumpButton = null;
-				return a;
+				a = b;
+				b = null;
+				return;
 			}
 
-			if (b.JumpButton == null || !b.JumpButton.IsPressed(playbackFrame))
+			if (b == null || !b.IsPressed(playbackFrame))
 			{
-				if (a.JumpButton.ReleaseFrame >= playbackFrame)
+				if (a.ReleaseFrame >= playbackFrame)
 				{
-					if (a.JumpButton.PressFrame < playbackFrame)
+					if (a.PressFrame < playbackFrame)
 					{
 						var whenrelease = playbackFrame - 1;
-						if (whenrelease > a.JumpButton.PressFrame)
+						if (whenrelease > a.PressFrame)
 						{
-							a.JumpButton.ReleaseFrame = whenrelease;
+							a.ReleaseFrame = whenrelease;
 						}
 						else
 						{
-							a.JumpButton.ReleaseFrame = a.JumpButton.PressFrame;//invalidate jic.
-							a.JumpButton = null;
+							a.ReleaseFrame = a.PressFrame;//invalidate jic.
+							a = null;
 						}
-					}else if(a.JumpButton.PressFrame == playbackFrame)
+					}else if(a.PressFrame == playbackFrame)
 					{
 						var whenpress = playbackFrame + 1;
-						if (whenpress < a.JumpButton.ReleaseFrame)
+						if (whenpress < a.ReleaseFrame)
 						{
-							a.JumpButton.PressFrame = whenpress;
+							a.PressFrame = whenpress;
 						}
 						else
 						{
 							//delete
-							a.JumpButton.PressFrame = whenpress;//invalidate jic. the 'isPressed' function will return false in this case.
-							a.JumpButton = null;
+							a.PressFrame = whenpress;//invalidate jic. the 'isPressed' function will return false in this case.
+							a = null;
 						}
-						return a;
+						return;
 					}
 				}
 			}
@@ -183,82 +182,78 @@ namespace GMTK
 			
 			
 			//were not pressing, now we are. (and if b is null, it's still fine, still not pressing the button.) also bounds check a, as - if we truncated a previous input, then it may not be valid for this frame anymore so ignore.
-			if (a.JumpButton == null || (a.JumpButton.ReleaseFrame < playbackFrame && a.JumpButton.ReleaseFrame != -1) || a.JumpButton.PressFrame == -1 || a.JumpButton.PressFrame > playbackFrame )
+			if (a == null || (a.ReleaseFrame < playbackFrame && a.ReleaseFrame != -1) || a.PressFrame == -1 || a.PressFrame > playbackFrame )
 			{
-				a.JumpButton = b.JumpButton;
-				b.JumpButton = null;
+				a = b;
+				b = null;
 			}
 			else
 			{
 				//there is a press with a, and we are causing a release.
-				if (b.JumpButton == null || b.JumpButton.PressFrame <= playbackFrame && (b.JumpButton.ReleaseFrame == -1 || b.JumpButton.ReleaseFrame > playbackFrame) && (a.JumpButton.ReleaseFrame != -1 && a.JumpButton.ReleaseFrame >= _playbackFrame))
+				if (b == null || b.PressFrame <= playbackFrame && (b.ReleaseFrame == -1 || b.ReleaseFrame > playbackFrame) && (a.ReleaseFrame != -1 && a.ReleaseFrame >= _playbackFrame))
 				{
 					//update the "previous" press to release.
-					if (a.JumpButton.PressFrame < playbackFrame - 1)
+					if (a.PressFrame < playbackFrame - 1)
 					{
-						a.JumpButton.ReleaseFrame = playbackFrame - 1;
+						a.ReleaseFrame = playbackFrame - 1;
 					}
 					else
 					{
 						//we perfectly caused an overlap, destroy a, replace with b.
-						a.JumpButton = null;
+						a = null;
 					}
 
 					//create a new press. or non-press, or whatever.
-					a.JumpButton = b.JumpButton;
-					b.JumpButton = null;
+					a = b;
+					b = null;
 				}
 				else
 				{
-					if (a.JumpButton.PressFrame > b.JumpButton.ReleaseFrame && b.JumpButton.ReleaseFrame != -1)
+					if (a.PressFrame > b.ReleaseFrame && b.ReleaseFrame != -1)
 					{
 						//exit... these don't overlap?
-					}else if (b.JumpButton.ReleaseFrame != -1 && b.JumpButton.ReleaseFrame < playbackFrame)
+					}else if (b.ReleaseFrame != -1 && b.ReleaseFrame < playbackFrame)
 					{
 						//exit, these... don't overlap?
-					}else if (a.JumpButton.Button == b.JumpButton.Button)
+					}else if (a.Button == b.Button)
 					{
 						//do nothing, more or less. Catch edge cases for press+press back to back.
-						if (b.JumpButton.PressFrame < a.JumpButton.PressFrame)
+						if (b.PressFrame < a.PressFrame)
 						{
-							a.JumpButton.PressFrame = b.JumpButton.PressFrame;
+							a.PressFrame = b.PressFrame;
 						}
 
-						if (b.JumpButton.ReleaseFrame == -1 || b.JumpButton.ReleaseFrame > a.JumpButton.ReleaseFrame)
+						if (b.ReleaseFrame == -1 || b.ReleaseFrame > a.ReleaseFrame)
 						{
-							a.JumpButton.ReleaseFrame = b.JumpButton.ReleaseFrame;
+							a.ReleaseFrame = b.ReleaseFrame;
 						}
 
-						b.JumpButton = null;
+						b = null;
 					}
 					else
 					{
 						//we press a button and a is not pressed, or vise-versa.
-						if (b.JumpButton.Button == Buttons.Jump)
+						if (b.Button == Buttons.Jump)
 						{
-							Debug.Assert(a.JumpButton.Button == Buttons.None);
-							a.JumpButton = b.JumpButton;
-							b.JumpButton = null;
-						} else if (b.JumpButton.Button == Buttons.None)
+							Debug.Assert(a.Button == Buttons.None);
+							a = b;
+							b = null;
+						} else if (b.Button == Buttons.None)
 						{
-							Debug.Assert(a.JumpButton.Button == Buttons.Jump);
-							a.JumpButton.ReleaseFrame = _playbackFrame-1;
-							a.JumpButton = b.JumpButton;
-							b.JumpButton = null;
+							Debug.Assert(a.Button == Buttons.Jump);
+							a.ReleaseFrame = _playbackFrame-1;
+							a = b;
+							b = null;
 						}
 					}
 				}
-				
 			}
-
-			if (a.ArrowButton == null)
-			{
-				a.ArrowButton = b.ArrowButton;
-				b.ArrowButton = null;
-			}
-			
-			
-
+		}
+		
+		private GameInput MergeInputs(long playbackFrame, GameInput a, GameInput b)
+		{
+			MergeButtonEvent(playbackFrame, ref a.JumpButton, ref b.JumpButton);
+			MergeButtonEvent(playbackFrame, ref a.ArrowButton, ref b.ArrowButton);
 			return a;
 		}
 

@@ -13,7 +13,7 @@ namespace GMTK
 		public Vector3 LinearVelocity;
 		public Vector3 AngularVelocity;
 		public Vector3 InputDir;
-
+		public float MoveSpeed;
 
 		public PlayerCheckpointData(TimelineListener timelineListener, Rigidbody rb, PlayerMovement player) : base(timelineListener)
 		{
@@ -24,6 +24,7 @@ namespace GMTK
 			LinearVelocity = _rb.linearVelocity;
 			AngularVelocity = _rb.angularVelocity;
 			InputDir = _player.inputDirection;
+			MoveSpeed = _player.moveSpeed;
 		}
 
 		public override void RestoreToCheckpoint()
@@ -33,6 +34,7 @@ namespace GMTK
 			_rb.linearVelocity = LinearVelocity;
 			_rb.angularVelocity = AngularVelocity;
 			_player.inputDirection = InputDir;
+			_player.moveSpeed = MoveSpeed;
 		}
 
 	}

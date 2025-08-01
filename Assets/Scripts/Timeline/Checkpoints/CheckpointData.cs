@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using DefaultNamespace;
+using UnityEngine;
 
 namespace GMTK
 {
@@ -60,5 +61,21 @@ namespace GMTK
 			_rb.angularVelocity = AngularVelocity;
 		}
 
+	}
+	
+	public class InteractableCheckpointData : CheckpointData
+	{
+		public bool _hasBeenInteractedWith;
+		public bool _isInteracting;
+
+		public InteractableCheckpointData(Interactable interactable) : base(interactable)
+		{
+		
+		}
+
+		public override void RestoreToCheckpoint()
+		{
+			
+		}
 	}
 }

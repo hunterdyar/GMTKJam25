@@ -38,7 +38,7 @@ namespace UI
 
 			if (right < left)
 			{
-				Debug.LogWarning("reversed?");
+				//Debug.LogWarning("reversed?");
 			}
 			if (left != right || ButtonEvent.PressFrame == ButtonEvent.ReleaseFrame || ButtonEvent.ReleaseFrame == -1)
 			{
@@ -46,7 +46,7 @@ namespace UI
 			else
 			{
 				//off the edge, i suppose!
-				gameObject.SetActive(false);
+				//gameObject.SetActive(false);
 				return;
 			}
 

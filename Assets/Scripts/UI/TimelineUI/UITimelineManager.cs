@@ -84,7 +84,6 @@ namespace UI
 		}
 		private void OnInput(long frame, GameInput input, bool instant)
 		{
-			Debug.Log(frame +" "+VisibleButtonEvents.Count);
 			//frames can be created at the current position
 			if (input.JumpButton != null)
 			{
@@ -138,8 +137,8 @@ namespace UI
 					//
 					// OnFrameExitView(nextStart + i, delta);
 					// OnFrameEnterView(_endDisplayFrame - i, delta);
-					OnFrameExitView(_endDisplayFrame - i, delta);
-					OnFrameEnterView(nextEnd + i, delta);
+					OnFrameExitView(_startDisplayFrame + i, delta);
+					OnFrameEnterView(nextEnd - i, delta);
 				}
 				
 			}else if (delta < 0)
@@ -154,14 +153,33 @@ namespace UI
 				{
 					//we moved the timeline to the right (down to earlier frames)
 					//we are moving the 'window' to the left (drag left)
-					OnFrameExitView(nextStart + i, delta);
-					OnFrameEnterView(_endDisplayFrame - i, delta);
+					OnFrameExitView(_endDisplayFrame - i, delta);
+					OnFrameEnterView(nextStart + i, delta);
 				}
 			}
 			
 			_startDisplayFrame = nextStart;
 			_endDisplayFrame = nextEnd;
 			_currentViewedDisplayFrame = _timeline.CurrentDisplayedFrame;
+
+			foreach (var vb in VisibleButtonEvents)
+			{
+				if (!_buttonChips.ContainsKey(vb))
+				{
+					Debug.LogWarning(vb.ToString());
+				}
+				else
+				{
+					if (vb.PressFrame <= _endDisplayFrame && vb.ReleaseFrame >= _startDisplayFrame)
+					{
+						if (!_buttonChips[vb].gameObject.activeInHierarchy)
+						{
+							Debug.LogWarning("AYO WTF", _buttonChips[vb].gameObject);
+						}
+					}
+				}
+
+			}
 		}
 
 		public bool TryGetFrameChip(long frame, out UIFrameChip chip)
@@ -198,10 +216,6 @@ namespace UI
 							AddVisibleButton(input.JumpButton);
 						}
 					}
-					else
-					{
-						Debug.LogWarning("input jump button is off-frame.");
-					}
 				}
 
 				if (input.ArrowButton != null)
@@ -216,7 +230,6 @@ namespace UI
 
 		public void OnFrameExitView(long frame, long delta)
 		{
-			//Debug.Log($"Exit View: {frame}");
 			int index = (int)(frame - StartDisplayFrame);
 			if (index >= 0 && index < Chips.Count)
 			{
@@ -227,8 +240,8 @@ namespace UI
 			{
 				if (input.JumpButton != null)
 				{
-					if((frame == input.JumpButton.ReleaseFrame && delta < 0)
-					   || (frame == input.JumpButton.PressFrame && delta > 0))
+					if((frame == input.JumpButton.ReleaseFrame && delta > 0)
+					   || (frame == input.JumpButton.PressFrame && delta < 0))
 					{
 						if (VisibleButtonEvents.Contains(input.JumpButton))
 						{
@@ -239,8 +252,8 @@ namespace UI
 
 				if (input.ArrowButton != null)
 				{
-					if ((frame == input.ArrowButton.ReleaseFrame && delta < 0)
-					    || (frame == input.ArrowButton.PressFrame && delta > 0))
+					if ((frame == input.ArrowButton.ReleaseFrame && delta > 0)
+					    || (frame == input.ArrowButton.PressFrame && delta < 0))
 					{
 						if (VisibleButtonEvents.Contains(input.ArrowButton))
 						{

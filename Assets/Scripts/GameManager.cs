@@ -25,7 +25,7 @@ namespace GMTK
 
 		void Awake()
 		{
-			_collectables = GameObject.FindObjectsOfType<Collectable>();
+			_collectables = GameObject.FindObjectsByType<Collectable>(FindObjectsSortMode.None);
 			_gameState = GameState.NotStarted;
 		}
 

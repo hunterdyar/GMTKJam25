@@ -14,9 +14,4 @@ public class MainMenuManager : MonoBehaviour
         Debug.Log("Quit Game");
         Application.Quit();
     }
-
-    public void OpenOptions()
-    {
-        Debug.Log("Options Menu Opened");
-    }
 }

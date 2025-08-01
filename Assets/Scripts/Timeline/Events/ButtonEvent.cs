@@ -35,7 +35,7 @@ namespace GMTK
 
 		public Vector2 GetDir()
 		{
-			if (Button == null || (Button & AnyDir) == 0)
+			if ((Button & AnyDir) == 0)
 			{
 				return Vector2.zero;
 			}

@@ -43,30 +43,30 @@ namespace UI
 			}
 
 			return;
-			if (_timelineManager.Timeline.TryGetFrame(realFrame, out var inputs))
-			{
-				_image.enabled = true;
-				//set active
-				//show icons
-				if (inputs.Any())
-				{
-					_image.color = Color.blueViolet;
-				}
-				else
-				{
-					_image.color = Color.white;
-				}
-			}
-			else
-			{
-				_image.enabled = true;
-				_image.color = Color.white;
-			}
-
-			if (realFrame == _timelineManager.Timeline.CurrentDisplayedFrame)
-			{
-				_image.color = Color.yellow;
-			}
+			// if (_timelineManager.Timeline.TryGetFrame(realFrame, out var inputs))
+			// {
+			// 	_image.enabled = true;
+			// 	//set active
+			// 	//show icons
+			// 	if (inputs.Any())
+			// 	{
+			// 		_image.color = Color.blueViolet;
+			// 	}
+			// 	else
+			// 	{
+			// 		_image.color = Color.white;
+			// 	}
+			// }
+			// else
+			// {
+			// 	_image.enabled = true;
+			// 	_image.color = Color.white;
+			// }
+			//
+			// if (realFrame == _timelineManager.Timeline.CurrentDisplayedFrame)
+			// {
+			// 	_image.color = Color.yellow;
+			// }
 		}
 	}
 }

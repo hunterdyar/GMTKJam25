@@ -9,7 +9,9 @@ namespace GMTK
     public class PlayerInput : MonoBehaviour
     {
         private TimelineRunner _runner;
+        [Header("Scene References")]
         [SerializeField] private UIScrubController _scrubber;
+        [SerializeField] private CameraFollow _cameraRig;
         [Header("Player Game Controls")]
         public InputActionReference _jumpAction;
         public InputActionReference _moveAction;
@@ -213,10 +215,11 @@ namespace GMTK
             _prevTickIsRecording = _runner.State == RunnerControlState.Recording;
         }
         
-        public static Buttons DirToMovement(Vector2 dir)
+        public Buttons DirToMovement(Vector2 inputDir)
         {
+            Vector3 dir = _cameraRig.InputDirToWorldDir(inputDir);
             var h = Mathf.RoundToInt(dir.normalized.x);
-            var v = Mathf.RoundToInt(dir.normalized.y);
+            var v = Mathf.RoundToInt(dir.normalized.z);
             Buttons b = 0;
             if (h == 1d)
             {

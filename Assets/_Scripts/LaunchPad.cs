@@ -11,8 +11,10 @@ public class LaunchPad : MonoBehaviour
 
         if (rb != null && other.CompareTag("Player"))
         {
-            rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z); // optional: reset vertical velocity
-            rb.AddForce(launchDirection.normalized * launchForce, ForceMode.VelocityChange);
+            var dir = transform.TransformDirection(launchDirection.normalized);
+            var opposingFactor = Vector3.Dot(rb.linearVelocity, -dir);
+            rb.linearVelocity = rb.linearVelocity+(dir*opposingFactor);
+            rb.AddForce(dir * launchForce, ForceMode.VelocityChange);
         }
     }
 }

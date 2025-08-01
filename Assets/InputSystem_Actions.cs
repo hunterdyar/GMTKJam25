@@ -189,6 +189,24 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""LookRight"",
+                    ""type"": ""Button"",
+                    ""id"": ""2976e5b7-6c65-4af6-8a09-56cf25a0f479"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""LookLeft"",
+                    ""type"": ""Button"",
+                    ""id"": ""85808ed8-55a9-48d6-b34d-1a7696a7e79d"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -629,6 +647,28 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Gamepad"",
                     ""action"": ""Scrub"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c145044d-604c-4c6d-b65e-08a995134343"",
+                    ""path"": ""<Gamepad>/rightStick/right"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LookRight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a75de7d4-3dfb-4462-bece-c5e0d3102e4b"",
+                    ""path"": ""<Gamepad>/rightStick/left"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LookLeft"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1227,6 +1267,8 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_Player_ToggleRecording = m_Player.FindAction("ToggleRecording", throwIfNotFound: true);
         m_Player_TogglePlayback = m_Player.FindAction("TogglePlayback", throwIfNotFound: true);
         m_Player_Scrub = m_Player.FindAction("Scrub", throwIfNotFound: true);
+        m_Player_LookRight = m_Player.FindAction("LookRight", throwIfNotFound: true);
+        m_Player_LookLeft = m_Player.FindAction("LookLeft", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1331,6 +1373,8 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_ToggleRecording;
     private readonly InputAction m_Player_TogglePlayback;
     private readonly InputAction m_Player_Scrub;
+    private readonly InputAction m_Player_LookRight;
+    private readonly InputAction m_Player_LookLeft;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1386,6 +1430,14 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/Scrub".
         /// </summary>
         public InputAction @Scrub => m_Wrapper.m_Player_Scrub;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/LookRight".
+        /// </summary>
+        public InputAction @LookRight => m_Wrapper.m_Player_LookRight;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/LookLeft".
+        /// </summary>
+        public InputAction @LookLeft => m_Wrapper.m_Player_LookLeft;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1445,6 +1497,12 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Scrub.started += instance.OnScrub;
             @Scrub.performed += instance.OnScrub;
             @Scrub.canceled += instance.OnScrub;
+            @LookRight.started += instance.OnLookRight;
+            @LookRight.performed += instance.OnLookRight;
+            @LookRight.canceled += instance.OnLookRight;
+            @LookLeft.started += instance.OnLookLeft;
+            @LookLeft.performed += instance.OnLookLeft;
+            @LookLeft.canceled += instance.OnLookLeft;
         }
 
         /// <summary>
@@ -1489,6 +1547,12 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Scrub.started -= instance.OnScrub;
             @Scrub.performed -= instance.OnScrub;
             @Scrub.canceled -= instance.OnScrub;
+            @LookRight.started -= instance.OnLookRight;
+            @LookRight.performed -= instance.OnLookRight;
+            @LookRight.canceled -= instance.OnLookRight;
+            @LookLeft.started -= instance.OnLookLeft;
+            @LookLeft.performed -= instance.OnLookLeft;
+            @LookLeft.canceled -= instance.OnLookLeft;
         }
 
         /// <summary>
@@ -1866,6 +1930,20 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnScrub(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "LookRight" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnLookRight(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "LookLeft" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnLookLeft(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

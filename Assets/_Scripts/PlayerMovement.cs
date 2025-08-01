@@ -36,6 +36,7 @@ public class PlayerMovement : MonoBehaviour
     [HideInInspector] public Vector3 inputDirection;
     private bool isGrounded;
     private bool jump;
+    
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -65,7 +66,7 @@ public class PlayerMovement : MonoBehaviour
         jump = input.JumpButton != null && input.JumpButton.IsPressed(frame);
         Vector2 dir = (input.ArrowButton != null && input.ArrowButton.IsPressed(frame)) ? input.ArrowButton.GetDir() : Vector2.zero;
         dir.Normalize();
-        inputDirection = InputToWorld(dir);
+        inputDirection = new Vector3(dir.x, 0, dir.y);
         isGrounded = IsOnGround();
         
         // Wall detection
@@ -108,9 +109,7 @@ public class PlayerMovement : MonoBehaviour
 
     private Vector3 InputToWorld(Vector2 dir)
     {
-        Vector3 input = new Vector3(dir.x, 0, dir.y);
-        input = Quaternion.Euler(0, 45, 0) * input;
-        return input.normalized;
+        return new Vector3(dir.x, 0, dir.y).normalized;
     }
     
     void PhysicsTick()

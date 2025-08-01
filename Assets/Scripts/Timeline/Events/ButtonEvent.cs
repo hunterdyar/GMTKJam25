@@ -39,11 +39,6 @@ namespace GMTK
 			{
 				return Vector2.zero;
 			}
-
-			//var h = (ArrowButton.Button & Buttons.Right) >0 ? 1 : 0 + (ArrowButton.Button & Buttons.Left) > 0 ? -1 : 0;
-			//var v = (ArrowButton.Button & Buttons.Up) > 0 ? 1 : 0 + (ArrowButton.Button & Buttons.Down) > 0 ? -1 : 0;
-			var h = 0;
-			var v = 0;
 			switch (Button)
 			{
 				case Buttons.Up:

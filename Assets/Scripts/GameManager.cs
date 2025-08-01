@@ -23,8 +23,9 @@ namespace GMTK
 		
 		private Collectable[] _collectables;
 
-		void Awake()
+		protected override void Awake()
 		{
+			base.Awake();
 			_collectables = GameObject.FindObjectsByType<Collectable>(FindObjectsSortMode.None);
 			_gameState = GameState.NotStarted;
 		}

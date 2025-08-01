@@ -29,6 +29,12 @@ namespace GMTK
         [CanBeNull] private ButtonEvent _alternateMoveEvent;
         [SerializeField] private Vector2 _inDir;
         [SerializeField] private Buttons _inButtons;
+        private bool _prevTickIsRecording;
+
+        private bool _jumpPressedThisFrame;
+        private bool _jumpReleasedThisFrame;
+        private bool _movePressedThisFrame;
+        private bool _moveReleasedThisFrame;
         private void Awake()
         {
             _runner = GetComponent<TimelineRunner>();
@@ -86,8 +92,26 @@ namespace GMTK
             
             if (_runner.State == RunnerControlState.Recording && _runner.Playing)
             {
+                if (!_prevTickIsRecording)
+                {
+                    //first tick we are recording, the ThisFrame() may or may not be true...
+                    _jumpPressedThisFrame = _jumpAction.action.IsPressed();
+                    //we force input on exit, so if we aren't pressing, it shouldn't matter...
+                    _jumpReleasedThisFrame = _jumpAction.action.WasReleasedThisFrame();
+                }
+                else
+                {
+                    _jumpPressedThisFrame = _jumpAction.action.WasPerformedThisFrame();
+                    _jumpReleasedThisFrame = _jumpAction.action.WasReleasedThisFrame();
+                }
+
+                //same for these....
+                _inDir = _moveAction.action.ReadValue<Vector2>();
+                _inButtons = DirToMovement(_inDir);
+                
+                
                 _gameInput.JumpButton = _currentJumpEvent;
-                if (_jumpAction.action.WasPerformedThisFrame())
+                if (_jumpPressedThisFrame)
                 {
                     if (_currentJumpEvent != null)
                     {
@@ -102,7 +126,7 @@ namespace GMTK
                     _gameInput.JumpButton = _currentJumpEvent;
                 }
 
-                if (_jumpAction.action.WasReleasedThisFrame())
+                if (_jumpReleasedThisFrame)
                 {
                     if (_currentJumpEvent == null)
                     {
@@ -115,8 +139,7 @@ namespace GMTK
                     _currentJumpEvent = null;
                 }
 
-                _inDir = _moveAction.action.ReadValue<Vector2>();
-                _inButtons = DirToMovement(_inDir);
+                
                 if (_inButtons > 0)
                 {
                     if (_currentMoveEvent == null)
@@ -185,7 +208,9 @@ namespace GMTK
                 _gameInput.ArrowButton = null;//This was the bug! this line missing!
                 _gameInput.ArrowButtonB = null;
             }
-            
+
+            //set last.
+            _prevTickIsRecording = _runner.State == RunnerControlState.Recording;
         }
         
         public static Buttons DirToMovement(Vector2 dir)

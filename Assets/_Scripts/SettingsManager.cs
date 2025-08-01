@@ -87,4 +87,7 @@ public class SettingsManager : MonoBehaviour
         float volume = Mathf.Log10(Mathf.Max(sliderValue, 0.001f)) * 20f;
         audioMixer.SetFloat(parameter, volume);
     }
+
+    public void OnMusicVolumeChanged(float value) => SetMixerVolume("MusicVolume", value);
+
 }

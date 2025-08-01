@@ -189,13 +189,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-<<<<<<< HEAD
-=======
-    - target: {fileID: 453708169517722694, guid: 08a12452761709d4dbfdcfa3a3a05c60, type: 3}
-      propertyPath: m_PlayOnAwake
-      value: 0
-      objectReference: {fileID: 0}
->>>>>>> main
     - target: {fileID: 1614649351094983695, guid: 08a12452761709d4dbfdcfa3a3a05c60, type: 3}
       propertyPath: m_Name
       value: Spring
@@ -868,19 +861,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 162847718}
-<<<<<<< HEAD
   offset: {x: -5, y: 5, z: -5}
   followSpeed: 5
   lookAtTarget: 1
-=======
-  _lookLeft: {fileID: 0}
-  _lookRight: {fileID: 0}
-  Only4Dirs: 0
-  offsetDistance: 10
-  followSpeed: 5
-  lookAtTarget: 1
-  LookDir: 0
->>>>>>> main
 --- !u!4 &746918533
 Transform:
   m_ObjectHideFlags: 0
@@ -2014,13 +1997,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-<<<<<<< HEAD
-=======
-    - target: {fileID: 453708169517722694, guid: 08a12452761709d4dbfdcfa3a3a05c60, type: 3}
-      propertyPath: m_PlayOnAwake
-      value: 0
-      objectReference: {fileID: 0}
->>>>>>> main
     - target: {fileID: 1614649351094983695, guid: 08a12452761709d4dbfdcfa3a3a05c60, type: 3}
       propertyPath: m_Name
       value: Spring (2)

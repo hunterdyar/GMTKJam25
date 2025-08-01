@@ -28,22 +28,26 @@ namespace UI
 
 		public List<ButtonEvent> VisibleButtonEvents = new List<ButtonEvent>();
 		public List<UIButtonChip> ButtonChips = new List<UIButtonChip>();
-
+		private Dictionary<ButtonEvent, UIButtonChip> _buttonChips = new Dictionary<ButtonEvent, UIButtonChip>();
 		private UICurrentFrameChip _currentFrameChip;
 		private UIFrameChip _rightEdgeChip;
+		private float _rightEdgePoint;
 		private long _currentViewedDisplayFrame;
-
+		private RectTransform _rectTransform;
 		private long HalfFrameCount;
 	
 		private bool _isRecording;
 		private void Awake()
 		{
+			_rectTransform = GetComponent<RectTransform>();
 			HalfFrameCount = TimelineLength / 2;
 			_currentFrameChip = GetComponent<UICurrentFrameChip>();
 			if (_currentFrameChip != null)
 			{
 				_currentFrameChip.Init(this);
 			}
+			_startDisplayFrame = -HalfFrameCount;
+			_endDisplayFrame = HalfFrameCount;
 		}
 
 		void Start()
@@ -51,7 +55,7 @@ namespace UI
 			Chips = new List<UIFrameChip>();
 			for (int i = 0; i < TimelineLength; i++)
 			{
-				Chips.Add(CreateChip(i));
+				Chips.Add(CreateFrameChip(i));
 			}
 			
 			OnPositionUpdate?.Invoke();
@@ -61,13 +65,13 @@ namespace UI
 		{
 			Timeline.OnInput += OnInput;
 			Timeline.OnCurrentDisplayFrameChanged += OnCurrentDisplayFrameChanged;
-			TimelineRunner.OnPlaybackChange += OnIsRecordingChange;
+			TimelineRunner.OnStateChange += OnIsRecordingChange;
 		}
 
 		private void OnDisable()
 		{
 			Timeline.OnCurrentDisplayFrameChanged -= OnCurrentDisplayFrameChanged;
-			TimelineRunner.OnPlaybackChange -= OnIsRecordingChange;
+			TimelineRunner.OnStateChange -= OnIsRecordingChange;
 		}
 
 		private void OnCurrentDisplayFrameChanged(long frame)
@@ -80,6 +84,21 @@ namespace UI
 		}
 		private void OnInput(long frame, GameInput input)
 		{
+			if (input.JumpButton != null)
+			{
+				if (!VisibleButtonEvents.Contains(input.JumpButton))
+				{
+					AddVisibleButton(input.JumpButton);
+				}
+			}
+
+			if (input.ArrowButton != null)
+			{
+				if (!VisibleButtonEvents.Contains(input.ArrowButton))
+				{
+					AddVisibleButton(input.ArrowButton);
+				}
+			}
 			//change color of timeline chip.
 			
 			// if (frame >= StartDisplayFrame && frame <= EndDisplayFrame)
@@ -98,15 +117,52 @@ namespace UI
 
 		public void UpdateVisuals()
 		{
-			_startDisplayFrame = _timeline.CurrentDisplayedFrame - HalfFrameCount;
-			_endDisplayFrame = _timeline.CurrentDisplayedFrame + HalfFrameCount;
+			var nextStart = _timeline.CurrentDisplayedFrame - HalfFrameCount;
+			// _startDisplayFrame = _timeline.CurrentDisplayedFrame - HalfFrameCount;
+			var nextEnd = _timeline.CurrentDisplayedFrame + HalfFrameCount;
+			// _endDisplayFrame = _timeline.CurrentDisplayedFrame + HalfFrameCount;
 
-			foreach (var chip in Chips)
+			//does our shift... shift?
+			Debug.Assert(nextStart - _startDisplayFrame == nextEnd - _endDisplayFrame);
+			var delta = nextStart - _startDisplayFrame;
+			if (delta == 0)
 			{
-				chip.UpdateVisuals();
+				return;
 			}
-			//slow :(
-			UpdateVisibleButtons();
+			else if(delta > 0)
+			{
+				if (delta > TimelineLength)
+				{
+					delta = TimelineLength;
+				}
+				for (int i = 0; i < delta; i++)
+				{
+					//we moved the timeline to the left (up to later frames)
+					//
+					// OnFrameExitView(nextStart + i, delta);
+					// OnFrameEnterView(_endDisplayFrame - i, delta);
+					
+					OnFrameExitView(_startDisplayFrame + i, delta);
+					OnFrameEnterView(nextEnd - i, delta);
+				}
+				
+			}else if (delta < 0)
+			{
+				if (delta < -TimelineLength)
+				{
+					delta = -TimelineLength;
+				}
+				for (int i = 0; i < -delta; i++)
+				{
+					//we moved the timeline to the right (down to earlier frames)
+					//we are moving the 'window' to the left (drag left)
+					OnFrameEnterView(nextStart + i, delta);
+					OnFrameExitView(_endDisplayFrame - i, delta);
+				}
+			}
+			
+			_startDisplayFrame = nextStart;
+			_endDisplayFrame = nextEnd;
 			_currentViewedDisplayFrame = _timeline.CurrentDisplayedFrame;
 		}
 
@@ -121,55 +177,132 @@ namespace UI
 			chip = null;
 			return false;
 		}
-		
-		public void UpdateVisibleButtons()
+
+		public void OnFrameEnterView(long frame, long delta)
 		{
-			//todo: only clear if the events are out of view.
-			VisibleButtonEvents.Clear();
-			for (long i = _startDisplayFrame;i< _endDisplayFrame; i++)
+			//Debug.Log($"Entering View: {frame}");
+			int index = (int)(frame - StartDisplayFrame);
+			if (index >= 0 && index < Chips.Count)
 			{
-				if (_timeline.TryGetFrame(i, out var input))
+				Chips[index].UpdateVisuals();
+			}
+
+			//add any new buttons
+			if (_timeline.TryGetFrame(frame, out var input))
+			{
+				if (input.JumpButton != null)
 				{
-					if (input.JumpButton != null)
+					if (!VisibleButtonEvents.Contains(input.JumpButton))
 					{
-						if (!VisibleButtonEvents.Contains(input.JumpButton))
+						AddVisibleButton(input.JumpButton);
+					}
+				}
+
+				if (input.ArrowButton != null)
+				{
+					if (!VisibleButtonEvents.Contains(input.ArrowButton))
+					{
+						AddVisibleButton(input.ArrowButton);
+					}
+				}
+			}
+		}
+
+		public void OnFrameExitView(long frame, long delta)
+		{
+			//Debug.Log($"Exit View: {frame}");
+			int index = (int)(frame - StartDisplayFrame);
+			if (index >= 0 && index < Chips.Count)
+			{
+				Chips[index].UpdateVisuals();
+			}
+
+			if (_timeline.TryGetFrame(frame, out var input))
+			{
+				if (input.JumpButton != null)
+				{
+					if((frame == input.JumpButton.ReleaseFrame && delta < 0)
+					   || (frame == input.JumpButton.PressFrame && delta > 0))
+					{
+						if (VisibleButtonEvents.Contains(input.JumpButton))
 						{
-							VisibleButtonEvents.Add(input.JumpButton);
+							RemoveVisibleButton(input.JumpButton);
 						}
 					}
-					
-					if (input.ArrowButton != null)
+				}
+
+				if (input.ArrowButton != null)
+				{
+					if ((frame == input.ArrowButton.ReleaseFrame && delta < 0)
+					    || (frame == input.ArrowButton.PressFrame && delta > 0))
 					{
-						if (!VisibleButtonEvents.Contains(input.ArrowButton))
+						if (VisibleButtonEvents.Contains(input.ArrowButton))
 						{
-							VisibleButtonEvents.Add(input.ArrowButton);
+							RemoveVisibleButton(input.ArrowButton);
 						}
 					}
 				}
 			}
-			//todo: we can get away with slow functions here because the truncated timeline won't show thousands of buttons... (I HOPE)
-			for (int i = ButtonChips.Count - 1; i >= 0; i--)
-			{
-				Destroy(ButtonChips[i].gameObject);
-
-				// if (ButtonChips[i].ReleaseFrame < StartDisplayFrame || ButtonChips[i].PressFrame > EndDisplayFrame)
-				// {
-				// 	ButtonChips.RemoveAt(i);
-				// 	//todo: pooler
-				// }
-			}
-			ButtonChips.Clear();
-
-			for (int i = 0; i < VisibleButtonEvents.Count; i++)
-			{
-				//Create Button Chip.
-				var chip = Instantiate(ButtonChipPrefab, ButtonChipParent);
-				chip.Init(this,VisibleButtonEvents[i]);
-				ButtonChips.Add(chip);
-			}
 		}
 
-		private UIFrameChip CreateChip(int index)
+		public void AddVisibleButton(ButtonEvent buttonEvent)
+		{
+			VisibleButtonEvents.Add(buttonEvent);
+			if (!_buttonChips.ContainsKey(buttonEvent))
+			{
+				var chip = GetButtonChip(buttonEvent);
+				chip.Init(this, buttonEvent);
+				_buttonChips.Add(buttonEvent,chip);
+			}
+			else
+			{
+				_buttonChips[buttonEvent].gameObject.SetActive(true);
+			}
+			
+		}
+
+		public void RemoveVisibleButton(ButtonEvent buttonEvent)
+		{
+			VisibleButtonEvents.Remove(buttonEvent);
+			// if (_buttonChips.TryGetValue(buttonEvent, out var chip))
+			// {
+			// 	chip.gameObject.SetActive(false);
+			// 	_buttonChips.Remove(buttonEvent);
+			// }
+
+			if (_buttonChips.ContainsKey(buttonEvent))
+			{
+				_buttonChips[buttonEvent].gameObject.SetActive(false);
+				_buttonChips.Remove(buttonEvent);
+			}
+			// else
+			// {
+			// 	//uh, okay!
+			// }
+		}
+
+		private UIButtonChip GetButtonChip(ButtonEvent be)
+		{
+			if (_buttonChips.TryGetValue(be, out var chip))
+			{
+				return chip;
+			}
+			
+			for (int i = 0; i < ButtonChips.Count; i++)
+			{
+				if (!ButtonChips[i].gameObject.activeSelf)
+				{
+					ButtonChips[i].gameObject.SetActive(true);
+					return ButtonChips[i];
+				}
+			}
+			
+			var b = Instantiate(ButtonChipPrefab, ButtonChipParent);
+			ButtonChips.Add(b);
+			return b;
+		}
+
+		private UIFrameChip CreateFrameChip(int index)
 		{
 			var chip = Instantiate<UIFrameChip>(FrameChipPrefab, FrameTimelineParent);
 			chip.SetIndex(index);
@@ -177,22 +310,17 @@ namespace UI
 			return chip;
 		}
 
-		private void OnScrollbarValueChanged(float val)
+		private void OnIsRecordingChange(RunnerControlState state)
 		{
-			Debug.Log($"Timeline Scrollbar set to {val}");
-			// var size = _timeline.LastFrame();
-			// _scrollbar.value = size*
-		}
-
-		private void OnIsRecordingChange(bool isRecording)
-		{
-			if (isRecording)
+			if (state == RunnerControlState.Recording)
 			{
 				_rightEdgeChip = Chips[(int)HalfFrameCount];
+				_rightEdgePoint = (transform as RectTransform).rect.width/2f;
 			}
 			else
 			{
 				_rightEdgeChip = Chips[^1];
+				_rightEdgePoint = (transform as RectTransform).rect.width;
 			}
 		}
 
@@ -209,6 +337,38 @@ namespace UI
 		public UIFrameChip GetRightEdgeChip()
 		{
 			return _rightEdgeChip;
+		}
+
+		public (float,float) GetFramePosition(ButtonEvent be)
+		{
+
+			var s = be.PressFrame;
+			var e = be.ReleaseFrame;
+			if (s < _startDisplayFrame)
+			{
+				s = _startDisplayFrame;
+			}
+
+			if (e > _endDisplayFrame)
+			{
+				e = _endDisplayFrame;
+			}
+
+			var b = 0f;
+			if (e == -1)
+			{
+				b = _rightEdgePoint;
+			}
+			else
+			{
+				var et = Mathf.InverseLerp(StartDisplayFrame, EndDisplayFrame, e);
+				b = _rectTransform.rect.width * et;
+
+			}
+
+			var st = Mathf.InverseLerp(StartDisplayFrame, EndDisplayFrame, s);
+			var a = _rectTransform.rect.width * st;
+			return (a, b);
 		}
 	}
 }

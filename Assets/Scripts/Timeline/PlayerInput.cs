@@ -106,7 +106,7 @@ namespace GMTK
                 {
                     if (_currentJumpEvent == null)
                     {
-                        Debug.LogError("Previous Jump event never set!");
+                        Debug.LogError("Previous Jump event never set! Need to set jump when entering playback.");
                         return;
                     }
                     _currentJumpEvent.ReleaseFrame = _runner.PendingFrame;

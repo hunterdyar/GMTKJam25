@@ -41,6 +41,8 @@ namespace UI
 				_image.color = Color.black;
 				return;
 			}
+
+			return;
 			if (_timelineManager.Timeline.TryGetFrame(realFrame, out var inputs))
 			{
 				_image.enabled = true;

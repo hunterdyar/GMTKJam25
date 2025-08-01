@@ -9,79 +9,53 @@ namespace UI
 	{
 		private UITimelineManager _manager;
 		public ButtonEvent ButtonEvent;
-		[CanBeNull] public UIFrameChip _pressChip;
-		[CanBeNull] public UIFrameChip _releaseChip;
-		Vector3[] _corners = new Vector3[4];
+		private RectTransform _rectTransform;
+		private RectTransform _parent;
+
+		private void Awake()
+		{
+			_rectTransform = GetComponent<RectTransform>();
+			_parent = transform.parent as RectTransform;
+		}
+
 		public void Update()
 		{
-			//update position.
-			
-			//scale self to span from press to release and look good and all that.
+			UpdateVisuals();
 		}
 
 		public void Init(UITimelineManager manager, ButtonEvent buttonEvent)
 		{
 			_manager = manager;
 			ButtonEvent = buttonEvent;
-			if (buttonEvent.PressFrame >= manager.StartDisplayFrame)
-			{
-				manager.TryGetFrameChip(buttonEvent.PressFrame, out _pressChip);
-			}
-			else
-			{
-				//off left edge of timeline!
-			}
-
-			if (buttonEvent.ReleaseFrame <= manager.EndDisplayFrame)
-			{
-				manager.TryGetFrameChip(buttonEvent.ReleaseFrame, out _releaseChip);
-			}
-			else
-			{
-				//off right edge of timeline
-			}
-
 			UpdateVisuals();
 		}
 
 		private void UpdateVisuals()
 		{
-			var r = transform as RectTransform;
-			var leftChip = _pressChip;
-			var rightChip = _releaseChip;
-			bool offRightEdge = false;
-			bool offLeftEdge = false;
-			if (_pressChip == null)
+			var r = _rectTransform;
+
+			var (left,right) = _manager.GetFramePosition(ButtonEvent);
+
+			if (right < left)
 			{
-				offLeftEdge = true;
-				leftChip = _manager.GetLeftEdgeChip();
+				//Debug.LogWarning("reversed?");
+			}
+			if (left != right || ButtonEvent.PressFrame == ButtonEvent.ReleaseFrame || ButtonEvent.ReleaseFrame == -1)
+			{
+			}
+			else
+			{
+				//off the edge, i suppose!
+				//gameObject.SetActive(false);
+				return;
 			}
 
-			if (_releaseChip == null)
-			{
-				offRightEdge = true;
-				//if recording, this needs to be _manager.GetCurrent()...
-				rightChip = _manager.GetRightEdgeChip();
-				
-			}
-			
-			if (leftChip != null && rightChip != null)
-			{
-				transform.position = Vector3.Lerp(leftChip.transform.position, rightChip.transform.position, 0.5f);
-				var left = (leftChip.transform as RectTransform);
-				var right = (rightChip.transform as RectTransform);
-				var p = left.parent as RectTransform;
-				
-				//move % up or down depending on if arrows or jump.
-				//sorry for the magic numbers :p
-				var yShift = ButtonEvent.Button == Buttons.Jump ? -r.rect.height * .4f : + p.rect.height * .4f;
-				
-				r.anchoredPosition = new Vector2(Mathf.Lerp(left.anchoredPosition.x-left.rect.width/2, right.anchoredPosition.x+right.rect.width/2, 0.5f),r.anchoredPosition.y) - new Vector2(p.rect.width/2, yShift);
-				r.sizeDelta = new Vector2(right.anchoredPosition.x-left.anchoredPosition.x,r.sizeDelta.y);
-				
-			}else{
-				
-			}
+			var yShift = ButtonEvent.Button == Buttons.Jump ? -_parent.rect.height * .2f : _parent.rect.height * .3f;
+
+			r.anchoredPosition = new Vector2(_parent.rect.min.x+Mathf.Lerp(left, right, 0.5f), _parent.anchoredPosition.y-yShift);
+			//move % up or down depending on if arrows or jump.
+			//sorry for the magic numbers :p
+			r.sizeDelta = new Vector2(right-left,r.sizeDelta.y);
 			
 			//change icon for when offleft and offright are true.
 		}

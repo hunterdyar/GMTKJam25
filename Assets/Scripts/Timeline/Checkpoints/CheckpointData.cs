@@ -61,4 +61,39 @@ namespace GMTK
 		}
 
 	}
+	
+	public class InteractableCheckpointData : CheckpointData
+	{
+		public bool _hasBeenInteractedWith;
+		public bool _isInteracting;
+		private readonly Interactable _interactable;
+		public InteractableCheckpointData(Interactable interactable) : base(interactable)
+		{
+			_hasBeenInteractedWith = interactable.HasBeenInteractedWith;
+			_isInteracting = interactable.IsInteracting;
+			_interactable = interactable;
+		}
+
+		public override void RestoreToCheckpoint()
+		{
+			_interactable.HasBeenInteractedWith = _hasBeenInteractedWith;
+			_interactable.IsInteracting = _isInteracting;
+		}
+	}
+
+	public class GameManagerCheckpointData : CheckpointData
+	{
+		public GameState _state;
+		private GameManager _gameManager;
+		public GameManagerCheckpointData(GameManager manager) : base(manager)
+		{
+			_gameManager = manager;
+			_state = manager.GameState;
+		}
+
+		override public void RestoreToCheckpoint()
+		{
+			_gameManager.SetGameState(_state);
+		}
+	}
 }

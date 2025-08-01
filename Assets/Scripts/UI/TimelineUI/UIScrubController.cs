@@ -69,6 +69,7 @@ public class UIScrubController : MonoBehaviour
 
     public void StepLeft()
     {
+        Debug.Log("StepLeft");
         Timeline.GoToFrame(Timeline.CurrentDisplayedFrame - 1);
     }
 
@@ -79,6 +80,7 @@ public class UIScrubController : MonoBehaviour
 
     public void StepRight()
     {
+        Debug.Log("StepRight");
         Timeline.GoToFrame(Timeline.CurrentDisplayedFrame + 1);
     }
 }

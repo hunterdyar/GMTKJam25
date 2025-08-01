@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEditor;
 using UnityEngine;
 
 namespace GMTK
@@ -11,7 +12,7 @@ namespace GMTK
 		public Buttons Button = Buttons.None;
 		public long PressFrame = -1;
 		public long ReleaseFrame = -1;
-
+		private readonly GUID _guid = GUID.Generate();
 		public bool IsPressed(long frame)
 		{
 			if (PressFrame == -1)
@@ -91,7 +92,7 @@ namespace GMTK
 
 		public override int GetHashCode()
 		{
-			return HashCode.Combine((int)Button, PressFrame, ReleaseFrame);
+			return _guid.GetHashCode();
 		}
 	}
 }

@@ -60,7 +60,7 @@ public class PlayerMovement : MonoBehaviour
         Timeline.OnInput -= OnInput;
     }
 
-    private void OnInput(long frame, GameInput input)
+    private void OnInput(long frame, GameInput input, bool instant)
     {
         jump = input.JumpButton != null && input.JumpButton.IsPressed(frame);
         Vector2 dir = (input.ArrowButton != null && input.ArrowButton.IsPressed(frame)) ? input.ArrowButton.GetDir() : Vector2.zero;

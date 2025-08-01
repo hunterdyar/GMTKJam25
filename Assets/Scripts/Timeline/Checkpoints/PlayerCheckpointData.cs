@@ -23,8 +23,8 @@ namespace GMTK
 		{
 			_player = player;
 			_rb = rb;
-			Position = _rb.transform.position;
-			Rotation = _rb.transform.rotation;
+			Position = _rb.position;
+			Rotation = _rb.rotation;
 			LinearVelocity = _rb.linearVelocity;
 			Debug.Log("player lvy get:"+_rb.linearVelocity.y);
 			AngularVelocity = _rb.angularVelocity;
@@ -38,8 +38,8 @@ namespace GMTK
 
 		public override void RestoreToCheckpoint()
 		{
-			_rb.transform.position = Position;
-			_rb.transform.rotation = Rotation;
+			_rb.position = Position;
+			_rb.rotation = Rotation;
 			_rb.linearVelocity = LinearVelocity;
 			Debug.Log("player lvy set:" + LinearVelocity.y);
 			_rb.angularVelocity = AngularVelocity;

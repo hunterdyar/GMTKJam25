@@ -22,6 +22,7 @@ namespace GMTK
 		private int _dirtyFrame;
 		public int MaxFrame;
 		private int _lastTickedFrame;
+		public bool alwaysCreateCheckpoints;
 		public void Init(int max)
 		{
 			_lastTickedFrame = -2;
@@ -298,9 +299,9 @@ namespace GMTK
 			_lastFrame = frame > _lastFrame ? frame : _lastFrame;
 			_lastTickedFrame = frame;
 
-			if (createCheckpoint)
+			if (createCheckpoint || alwaysCreateCheckpoints)
 			{
-				var c = new Checkpoint(frame);
+				var c = new Checkpoint(frame, _listeners.Count);
 				foreach (var listener in _listeners)
 				{
 					listener.SaveCurrentSelfToCheckpoint(ref c);
@@ -316,7 +317,7 @@ namespace GMTK
 			{
 				Debug.LogError("whoops");
 			}
-			var c = new Checkpoint(0);
+			var c = new Checkpoint(0, _listeners.Count);
 			foreach (var listener in _listeners)
 			{
 				listener.SaveCurrentSelfToCheckpoint(ref c);

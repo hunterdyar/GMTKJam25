@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4dad1a7bd8d341fcb068a659a8d729f5, type: 3}
   m_Name: TestTimeline
   m_EditorClassIdentifier: 
-  _playbackFrame: 0
+  MaxFrame: 0
+  alwaysCreateCheckpoints: 1

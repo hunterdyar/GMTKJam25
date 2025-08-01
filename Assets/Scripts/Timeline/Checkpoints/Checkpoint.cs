@@ -5,18 +5,20 @@ namespace GMTK
 {
 	public class Checkpoint
 	{
-		public List<CheckpointData> _checkpointData = new List<CheckpointData>();
-
+		public CheckpointData[] _checkpointData;
+		private int lastAdded = 0;
 		public int Frame => _frame;
 		private int _frame;
-		public Checkpoint(int playbackFrame)
+		public Checkpoint(int playbackFrame, int size)
 		{
 			_frame = playbackFrame;
+			_checkpointData = new CheckpointData[size];
 		}
 
 		public void RegisterObject(CheckpointData data)
 		{
-			_checkpointData.Add(data);
+			_checkpointData[lastAdded] = (data);
+			lastAdded++;
 		}
 
 		public void RestoreCheckpoint()

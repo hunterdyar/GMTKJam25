@@ -132,6 +132,8 @@ GameObject:
   - component: {fileID: 5530663720960980254}
   - component: {fileID: 7806320772490068905}
   - component: {fileID: 5052124174683056376}
+  - component: {fileID: 1332662890687792061}
+  - component: {fileID: 6235837619475775995}
   m_Layer: 0
   m_Name: BatteryPickUp
   m_TagString: Untagged
@@ -268,6 +270,42 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!65 &1332662890687792061
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1108998526902725096}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.4, y: 0.29, z: 0.28}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &6235837619475775995
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1108998526902725096}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a58ed829a7e429da5e3051947222f60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _timeline: {fileID: 11400000, guid: 8b229de231dd22d43882eb9a438fe6e3, type: 2}
+  HasBeenInteractedWith: 0
+  IsInteracting: 0
 --- !u!1001 &1696967556796663443
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -19,8 +19,8 @@ namespace GMTK
 		{
 			_player = player;
 			_rb = rb;
-			Position = _rb.position;
-			Rotation = _rb.rotation;
+			Position = _rb.transform.position;
+			Rotation = _rb.transform.rotation;
 			LinearVelocity = _rb.linearVelocity;
 			AngularVelocity = _rb.angularVelocity;
 			InputDir = _player.inputDirection;
@@ -29,8 +29,8 @@ namespace GMTK
 
 		public override void RestoreToCheckpoint()
 		{
-			_rb.position = Position;
-			_rb.rotation = Rotation;
+			_rb.transform.position = Position;
+			_rb.transform.rotation = Rotation;
 			_rb.linearVelocity = LinearVelocity;
 			_rb.angularVelocity = AngularVelocity;
 			_player.inputDirection = InputDir;

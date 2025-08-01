@@ -86,6 +86,6 @@ public class UIScrubController : MonoBehaviour
     public void StepRight()
     {
         Debug.Log("StepRight");
-        _timelineRunner.ScrubJumpToFrame(Timeline.CurrentDisplayedFrame);
+        _timelineRunner.StepForwardOne();
     }
 }

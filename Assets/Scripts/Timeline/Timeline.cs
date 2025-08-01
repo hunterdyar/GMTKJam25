@@ -72,7 +72,7 @@ namespace GMTK
 			{
 				if (i % 10 == 0)
 				{
-					CreateCheckpointAtCurrent();
+					//CreateCheckpointAtCurrent();
 				}
 				_playbackFrame = i;
 				TickFrame(i, true);
@@ -82,7 +82,13 @@ namespace GMTK
 			_playbackFrame = frame;
 			TickFrame(frame, false);
 			OnCurrentDisplayFrameChanged?.Invoke(frame);
-			CreateCheckpointAtCurrent();
+			//CreateCheckpointAtCurrent();
+		}
+
+		public void StepForwardOneFrame()
+		{
+			_playbackFrame = _lastTickedFrame + 1;
+			TickFrame(_playbackFrame, false);
 		}
 
 		public void SetDirtyAfter(long frame)
@@ -265,7 +271,7 @@ namespace GMTK
 
 		public void TickFrame(long frame, bool instant)
 		{
-			Debug.Log("tick "+frame);
+			//Debug.Log("tick "+frame);
 			if (frame == _lastTickedFrame)
 			{
 				Debug.LogWarning("are you sure about that? ");

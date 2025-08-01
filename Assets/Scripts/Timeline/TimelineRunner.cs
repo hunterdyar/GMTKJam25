@@ -58,6 +58,7 @@ namespace GMTK
 				if (_state == RunnerControlState.Recording)
 				{
 					ToggleRecordState(true);
+					Timeline.SetDirtyAfter(Timeline.CurrentDisplayedFrame);
 				}
 			}
 		}
@@ -141,6 +142,12 @@ namespace GMTK
 		{
 			StopRecordingIfRecording();
 			Timeline.GoToFrame(frame);
+		}
+
+		public void StepForwardOne()
+		{
+			StopRecordingIfRecording();
+			Timeline.StepForwardOneFrame();
 		}
 
 		public void PauseIfPlaying(bool force = false)

@@ -28,7 +28,7 @@ namespace GMTK
 			Timeline.OnInput -= OnInput;
 		}
 
-		private void OnInput(long arg1, GameInput arg2, bool arg3)
+		private void OnInput(int arg1, GameInput arg2, bool arg3)
 		{
 			//if overlap.... set some bool.
 			bool noPlayer = true;

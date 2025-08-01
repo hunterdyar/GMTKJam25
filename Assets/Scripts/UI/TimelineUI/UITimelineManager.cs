@@ -9,10 +9,10 @@ namespace UI
 {
 	public class UITimelineManager : MonoBehaviour
 	{
-		public long StartDisplayFrame => _startDisplayFrame;
-		private long _startDisplayFrame;
-		public long EndDisplayFrame => _endDisplayFrame;
-		private long _endDisplayFrame;
+		public int StartDisplayFrame => _startDisplayFrame;
+		private int _startDisplayFrame;
+		public int EndDisplayFrame => _endDisplayFrame;
+		private int _endDisplayFrame;
 
 		public int TimelineLength = 100;
 		public List<UIFrameChip> Chips;
@@ -32,9 +32,9 @@ namespace UI
 		private UICurrentFrameChip _currentFrameChip;
 		private UIFrameChip _rightEdgeChip;
 		private float _rightEdgePoint;
-		private long _currentViewedDisplayFrame;
+		private int _currentViewedDisplayFrame;
 		private RectTransform _rectTransform;
-		private long HalfFrameCount;
+		private int HalfFrameCount;
 	
 		private bool _isRecording;
 		private void Awake()
@@ -78,7 +78,7 @@ namespace UI
 			TimelineRunner.OnStateChange -= OnIsRecordingChange;
 		}
 
-		private void OnCurrentDisplayFrameChanged(long frame)
+		private void OnCurrentDisplayFrameChanged(int frame)
 		{
 			//this frame should be centered.
 			if (_currentViewedDisplayFrame != frame)
@@ -86,7 +86,7 @@ namespace UI
 				//UpdateVisuals();
 			}
 		}
-		private void OnInput(long frame, GameInput input, bool instant)
+		private void OnInput(int frame, GameInput input, bool instant)
 		{
 			//frames can be created at the current position
 			if (input.JumpButton != null)
@@ -188,7 +188,7 @@ namespace UI
 			}
 		}
 
-		public bool TryGetFrameChip(long frame, out UIFrameChip chip)
+		public bool TryGetFrameChip(int frame, out UIFrameChip chip)
 		{
 			int index = (int)(frame - StartDisplayFrame);
 			if (index >= 0 && index < Chips.Count)
@@ -200,7 +200,7 @@ namespace UI
 			return false;
 		}
 
-		public void OnFrameEnterView(long frame, long delta)
+		public void OnFrameEnterView(int frame, int delta)
 		{
 			//Debug.Log($"Entering View: {frame}");
 			int index = (int)(frame - StartDisplayFrame);
@@ -234,7 +234,7 @@ namespace UI
 			}
 		}
 
-		public void OnFrameExitView(long frame, long delta)
+		public void OnFrameExitView(int frame, int delta)
 		{
 			int index = (int)(frame - StartDisplayFrame);
 			if (index >= 0 && index < Chips.Count)

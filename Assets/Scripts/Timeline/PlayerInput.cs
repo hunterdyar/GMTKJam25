@@ -88,7 +88,7 @@ namespace GMTK
             {
                 _runner.PauseIfPlaying();
                 //stop recording if recording?
-                long delta = (long)(Mathf.RoundToInt(_moveAction.action.ReadValue<Vector2>().x));
+                int delta = (Mathf.RoundToInt(_moveAction.action.ReadValue<Vector2>().x));
                 _scrubber.Scrub(delta);
             }
             

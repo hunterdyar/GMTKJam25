@@ -24,8 +24,8 @@ public class PlayerMovement : MonoBehaviour
     [Header("Jump Buffer & Coyote Time")]
     [SerializeField] private float jumpBufferTime = 0.15f;
     [SerializeField] private float coyoteTime = 0.15f;
-    private float jumpBufferTimer = -1f;
-    private float coyoteTimer = 0f;
+    [HideInInspector]public float jumpBufferTimer = -1f;
+    [HideInInspector]public float coyoteTimer = 0f;
 
     [Header("Wall Jump")]
     public float wallPushForce = 12f;
@@ -34,8 +34,8 @@ public class PlayerMovement : MonoBehaviour
 
     private Rigidbody rb;
     [HideInInspector] public Vector3 inputDirection;
-    private bool isGrounded;
-    private bool jump;
+    [HideInInspector] public bool isGrounded;
+    [HideInInspector] public bool jump;
     
     void Awake()
     {
@@ -60,8 +60,8 @@ public class PlayerMovement : MonoBehaviour
     {
         Timeline.OnInput -= OnInput;
     }
-
-    private void OnInput(long frame, GameInput input, bool instant)
+    
+    private void OnInput(int frame, GameInput input, bool instant)
     {
         jump = input.JumpButton != null && input.JumpButton.IsPressed(frame);
         Vector2 dir = (input.ArrowButton != null && input.ArrowButton.IsPressed(frame)) ? input.ArrowButton.GetDir() : Vector2.zero;

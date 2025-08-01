@@ -8,33 +8,34 @@ namespace GMTK
 	[CreateAssetMenu(fileName = "Timeline", menuName = "Jam/Timeline", order = 0)]
 	public class Timeline : ScriptableObject
 	{
-		public static Action<long> OnCurrentDisplayFrameChanged;
-		public static Action<long, GameInput, bool> OnInput;
-		public long CurrentDisplayedFrame => _playbackFrame;
-		private long _playbackFrame;
+		public static Action<int> OnCurrentDisplayFrameChanged;
+		public static Action<int, GameInput, bool> OnInput;
+		public int CurrentDisplayedFrame => _playbackFrame;
+		private int _playbackFrame;
 		
-		private readonly Dictionary<long, GameInput> _inputsMap = new Dictionary<long, GameInput>();
-
-		private readonly List<Checkpoint> _checkpoints = new List<Checkpoint>();
+		private GameInput[] _inputHistory;
+		private Checkpoint[] _checkpointHistory;
 		private readonly List<TimelineListener> _listeners = new List<TimelineListener>();
 
 		private GameInput _pending;
-		private long _lastFrame;
-		private long _dirtyFrame;
-		public long MaxFrame;
-		private long _lastTickedFrame;
-		public void Init(long max)
+		private int _lastFrame;
+		private int _dirtyFrame;
+		public int MaxFrame;
+		private int _lastTickedFrame;
+		public void Init(int max)
 		{
 			_lastTickedFrame = -2;
 			MaxFrame = max;
-			_playbackFrame = -1;
+			_playbackFrame = 0;
 			_lastFrame = 0;
-			_inputsMap.Clear();
-			_checkpoints.Clear();
+			_inputHistory = new GameInput[MaxFrame+1];
+			_checkpointHistory = new Checkpoint[MaxFrame + 1];
+			// _listeners.Clear();//they should all deregister, and if they don't i want to know about it.
 			Physics.simulationMode = SimulationMode.Script;
+			CreateInitialCheckpoint();
 		}
 
-		public void GoToFrame(long frame)
+		public void GoToFrame(int frame)
 		{
 			//clamp
 			if (frame < 0)
@@ -59,28 +60,35 @@ namespace GMTK
 				return;
 			}
 			
-			//restore to next available checkpoint.
-			var lkg = _checkpoints.Where(x => x.Frame < frame && x.Frame < _dirtyFrame).OrderByDescending(x => x.Frame).First();
+			//restore to next available (clean) checkpoint.
+			Checkpoint lkg = _checkpointHistory[0];
+			for (int i = Mathf.Min(_dirtyFrame,frame); i >= 0; i--)
+			{
+				if ( _checkpointHistory[i] != null)
+				{
+					lkg = _checkpointHistory[i];
+					break;
+				}
+			}
 			lkg.RestoreCheckpoint();
+			_playbackFrame = lkg.Frame;
+			_lastTickedFrame = lkg.Frame;//cheating this variable...
+			
 			if (lkg.Frame == frame)
 			{
 				//the <= in the Where is an = so we always do a TickFrame
 				//this is so we update visuals. it's a hack! could be better!
 				//return;
 			}
-			for (long i = lkg.Frame; i < frame; i++)
+			else
 			{
-				if (i % 10 == 0)
+				for (int i = lkg.Frame + 1; i <= frame; i++)
 				{
-					//CreateCheckpointAtCurrent();
+					_playbackFrame = i;
+					TickFrame(i, i == frame, i % 10 == 0);
 				}
-				_playbackFrame = i;
-				TickFrame(i, true);
 			}
-			
-			//now we are caught up to this frame, let's play this frame back out.
-			_playbackFrame = frame;
-			TickFrame(frame, false);
+
 			OnCurrentDisplayFrameChanged?.Invoke(frame);
 			//CreateCheckpointAtCurrent();
 		}
@@ -91,56 +99,57 @@ namespace GMTK
 			TickFrame(_playbackFrame, false);
 		}
 
-		public void SetDirtyAfter(long frame)
+		public void SetDirtyAfter(int frame)
 		{
 			_dirtyFrame = frame+1;
 		}
 
 		public void ClearDirtyCheckpoints()
 		{
-			for (int i = _checkpoints.Count - 1; i >= 0; i--)
+			for (int i = _dirtyFrame; i <= MaxFrame; i++)
 			{
-				if (_checkpoints[i].Frame >= _dirtyFrame)
-				{
-					_checkpoints.RemoveAt(i);
-				}
+				_checkpointHistory[i] = null;
 			}
 		}
 		
 		public void Tick(bool recording = false)
 		{
 			_playbackFrame++;
-			if (_playbackFrame >= MaxFrame)
+			if (_playbackFrame >= MaxFrame || _playbackFrame < 0)
 			{
 				return;
 			}
 			//add new inputs! todo: playback vs. recording :p
 			if (recording)
 			{
-				if (_inputsMap.TryGetValue(_playbackFrame, out GameInput input))
+				var input = _inputHistory[_playbackFrame];
+				
+				//these were -1, then we updated or changed history. so they are invalid and can be discarded. 
+				//all the checks for this are uh, still around in rest of the code, but moving it here cleans a lot of that up, since we won't broadcast an out-of-range input button.
+				if (input.JumpButton != null && input.JumpButton.ReleaseFrame != -1 && (input.JumpButton.ReleaseFrame < _playbackFrame || input.JumpButton.PressFrame > _playbackFrame))
 				{
-					input = MergeInputs(_playbackFrame, input, _pending);
-					_inputsMap[_playbackFrame] = input;
-					//if we updated things?
-					_dirtyFrame = _playbackFrame;
+					input.JumpButton = null;
 				}
-				else
+
+				if (input.ArrowButton != null && input.ArrowButton.ReleaseFrame != -1 && (input.ArrowButton.ReleaseFrame < _playbackFrame || input.ArrowButton.PressFrame > _playbackFrame))
 				{
-					if (_pending.Any())
-					{
-						_inputsMap.Add(_playbackFrame, _pending);
-					}
+					input.ArrowButton= null;
 				}
+				
+				input = MergeInputs(_playbackFrame, input, _pending);
+				_inputHistory[_playbackFrame] = input;
+				//if we updated things?
+				_dirtyFrame = _playbackFrame;
 			}
 
-			TickFrame(_playbackFrame, false);
+			TickFrame(_playbackFrame, false, _playbackFrame == 0 || _playbackFrame % 64 == 0);
 			OnCurrentDisplayFrameChanged?.Invoke(_playbackFrame);
 			_pending = GameInput.None;
 		}
 
 		//Merge B into A. Set any releases to playbackFrame. We should be able to discard b after this.
 
-		private void MergeButtonEvent(long playbackFrame, ref ButtonEvent a, ref ButtonEvent b)
+		private void MergeButtonEvent(int playbackFrame, ref ButtonEvent a, ref ButtonEvent b)
 		{
 			if (a == null)
 			{
@@ -257,7 +266,7 @@ namespace GMTK
 			}
 		}
 		
-		private GameInput MergeInputs(long playbackFrame, GameInput a, GameInput b)
+		private GameInput MergeInputs(int playbackFrame, GameInput a, GameInput b)
 		{
 			MergeButtonEvent(playbackFrame, ref a.JumpButton, ref b.JumpButton);
 			MergeButtonEvent(playbackFrame, ref a.ArrowButton, ref b.ArrowButton);
@@ -269,7 +278,7 @@ namespace GMTK
 			_pending = input;
 		}
 
-		public void TickFrame(long frame, bool instant)
+		public void TickFrame(int frame, bool instant, bool createCheckpoint = false)
 		{
 			//Debug.Log("tick "+frame);
 			if (frame == _lastTickedFrame)
@@ -282,34 +291,42 @@ namespace GMTK
 			{
 				return;
 			}
-			
-			if (_inputsMap.TryGetValue(frame, out var input))
-			{
-				BroadcastEvent(_playbackFrame, input, instant);
-			}
-			else
-			{
-				BroadcastEvent(_playbackFrame, GameInput.None, instant);
-			}
 
+			var input = _inputHistory[frame];
+			BroadcastEvent(frame, input, instant);
 			Physics.Simulate(Time.fixedUnscaledDeltaTime);
 			_lastFrame = frame > _lastFrame ? frame : _lastFrame;
 			_lastTickedFrame = frame;
+
+			if (createCheckpoint)
+			{
+				var c = new Checkpoint(frame);
+				foreach (var listener in _listeners)
+				{
+					listener.SaveCurrentSelfToCheckpoint(ref c);
+				}
+
+				_checkpointHistory[frame] = c;
+			}
 		}
 
-		public void CreateCheckpointAtCurrent()
+		void CreateInitialCheckpoint()
 		{
-			Debug.Log($"Creating Checkpoint {_playbackFrame}");
-			var c = new Checkpoint(_playbackFrame);
+			if (_playbackFrame > 0)
+			{
+				Debug.LogError("whoops");
+			}
+			var c = new Checkpoint(0);
 			foreach (var listener in _listeners)
 			{
 				listener.SaveCurrentSelfToCheckpoint(ref c);
 			}
 
-			_checkpoints.Add(c);
+			_checkpointHistory[0] = c;
 		}
 
-		private void BroadcastEvent(long frame, GameInput input, bool instant)
+
+		private void BroadcastEvent(int frame, GameInput input, bool instant)
 		{
 			OnInput?.Invoke(frame, input, instant);
 		}
@@ -338,36 +355,45 @@ namespace GMTK
 			}
 		}
 
-		public bool TryGetFrame(long frame, out GameInput input)
+		public bool TryGetFrame(int frame, out GameInput input)
 		{
-			return _inputsMap.TryGetValue(frame, out input);
+			if(frame < 0 || frame >=MaxFrame)
+			{
+				input = GameInput.None;
+				return false;
+			}
+			input = _inputHistory[frame];
+			return true;
 		}
 
-		public long LastFrame()
+		public int LastFrame()
 		{
 			return _lastFrame;
 		}
 
-		public void ForceReleaseInput(long frame)
+		public void ForceReleaseInput(int frame)
 		{
-			if (_inputsMap.TryGetValue(frame, out var input))
+			if (frame < 0 || frame >= MaxFrame)
 			{
-				if (input.JumpButton != null && input.JumpButton.ReleaseFrame == -1)
-				{
-					input.JumpButton.ReleaseFrame = frame;
-				}
-
-				if (input.ArrowButton != null && input.ArrowButton.ReleaseFrame == -1)
-				{
-					input.ArrowButton.ReleaseFrame = frame;
-				}
-
-				if (input.ArrowButtonB != null && input.ArrowButtonB.ReleaseFrame == -1)
-				{
-					input.ArrowButtonB.ReleaseFrame = frame;
-				}
+				return;
+			}
+			var input = _inputHistory[frame];
+			
+			if (input.JumpButton != null && input.JumpButton.ReleaseFrame == -1)
+			{
+				input.JumpButton.ReleaseFrame = frame;
 			}
 
+			if (input.ArrowButton != null && input.ArrowButton.ReleaseFrame == -1)
+			{
+				input.ArrowButton.ReleaseFrame = frame;
+			}
+
+			if (input.ArrowButtonB != null && input.ArrowButtonB.ReleaseFrame == -1)
+			{
+				input.ArrowButtonB.ReleaseFrame = frame;
+			}
+			// _inputHistory[frame] = input;
 			_pending = GameInput.None;
 		}
 	}

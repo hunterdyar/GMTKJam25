@@ -18,7 +18,7 @@ public class UIScrubController : MonoBehaviour
     private bool _isScrubbing;
     public Vector2 _mouseSumPosition;
     public Vector2 _lastMousePosition;
-    private long _startScrubCurrentFrame;
+    private int _startScrubCurrentFrame;
 
     private Mouse mouse;
     void Awake()
@@ -60,7 +60,7 @@ public class UIScrubController : MonoBehaviour
         _isScrubbing = isScrubbing;
     }
 
-    public void Scrub(long delta)
+    public void Scrub(int delta)
     {
         Debug.Assert(_isScrubbing);
         _timelineRunner.ScrubJumpToFrame(_manager.Timeline.CurrentDisplayedFrame + (delta));

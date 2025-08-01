@@ -15,7 +15,7 @@ namespace GMTK
 	public class GameManager : TimelineListener
 	{
 		public static Action<GameState> OnGameStateChange;
-		public long Score => _timeline.CurrentDisplayedFrame;
+		public int Score => _timeline.CurrentDisplayedFrame;
 
 		public GameState GameState => _gameState;
 		//only serialized for testing to see it in the inspector.
@@ -35,7 +35,7 @@ namespace GMTK
 			OnGameStateChange?.Invoke(_gameState);
 		}
 		
-		private void OnInput(long frame, GameInput input, bool instant)
+		private void OnInput(int frame, GameInput input, bool instant)
 		{
 			if (frame <= 1)
 			{

@@ -21,11 +21,11 @@ namespace GMTK
 		/// If we are trying to watch or record the game with a real world clock ticking things.
 		/// </summary>
 		public bool Playing = false;
-		public long testFrame;
+		public int testFrame;
 
 		public InputAction _debugCreateCheckpoint;
 		public InputAction _debugGoToTestFrame; 
-		public long PendingFrame => Timeline.CurrentDisplayedFrame + 1;
+		public int PendingFrame => Timeline.CurrentDisplayedFrame + 1;
 		public RunnerControlState State => _state;
 		[SerializeField]
 		private RunnerControlState _state = RunnerControlState.Playback;
@@ -68,7 +68,6 @@ namespace GMTK
 			Playing = false;
 			Timeline.Init(30*50);
 			//save first position.
-			Timeline.CreateCheckpointAtCurrent();
 			OnStateChange?.Invoke(_state);
 			OnPlaybackChange?.Invoke(Playing);
 		}
@@ -77,7 +76,7 @@ namespace GMTK
 		{
 			if (_debugCreateCheckpoint.WasPerformedThisFrame())
 			{
-				Timeline.CreateCheckpointAtCurrent();
+				// Timeline.CreateCheckpointAtCurrent();
 			}
 
 			if (_debugGoToTestFrame.WasPerformedThisFrame())
@@ -138,7 +137,7 @@ namespace GMTK
 			}
 		}
 
-		public void ScrubJumpToFrame(long frame)
+		public void ScrubJumpToFrame(int frame)
 		{
 			StopRecordingIfRecording();
 			Timeline.GoToFrame(frame);

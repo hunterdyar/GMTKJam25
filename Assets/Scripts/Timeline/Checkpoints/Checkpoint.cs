@@ -6,9 +6,9 @@ namespace GMTK
 	{
 		public List<CheckpointData> _checkpointData = new List<CheckpointData>();
 
-		public long Frame => _frame;
-		private long _frame;
-		public Checkpoint(long playbackFrame)
+		public int Frame => _frame;
+		private int _frame;
+		public Checkpoint(int playbackFrame)
 		{
 			_frame = playbackFrame;
 		}

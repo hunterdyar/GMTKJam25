@@ -7795,10 +7795,6 @@ PrefabInstance:
       propertyPath: target
       value: 
       objectReference: {fileID: 162847718}
-    - target: {fileID: 5067209186971966063, guid: af2c5bb647032264196d5593fbae29cc, type: 3}
-      propertyPath: Only4Dirs
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

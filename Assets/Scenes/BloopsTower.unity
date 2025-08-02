@@ -3351,10 +3351,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Canvas
       objectReference: {fileID: 0}
-    - target: {fileID: 1907566128716123169, guid: 87cbb017b8be65645a6ceda3d8486ee7, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 4236222353998688097, guid: 87cbb017b8be65645a6ceda3d8486ee7, type: 3}
       propertyPath: _timelineRunner
       value: 

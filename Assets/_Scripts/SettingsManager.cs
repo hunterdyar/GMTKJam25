@@ -14,31 +14,34 @@ public class SettingsManager : MonoBehaviour
     [SerializeField] private Slider sfxSlider;
     [SerializeField] private AudioMixer audioMixer;
 
-    [SerializeField] private float defaultMasterVolume = 0.7f;
-    [SerializeField] private float defaultMusicVolume = 0.7f;
-    [SerializeField] private float defaultSFXVolume = 0.7f;
+    [SerializeField] private float defaultMasterVolume = 0.6f;
+    [SerializeField] private float defaultMusicVolume = 0.6f;
+    [SerializeField] private float defaultSFXVolume = 0.6f;
 
     private Resolution[] resolutions;
 
     private void Start()
     {
-        // Populate resolutions
+        LoadSettings(); // Loads and applies settings
+    }
+
+    private void LoadSettings()
+    {
         resolutions = Screen.resolutions;
         resolutionDropdown.ClearOptions();
 
         var options = new System.Collections.Generic.List<string>();
         string currentRes = $"{Screen.currentResolution.width} x {Screen.currentResolution.height}";
 
-        for (int i = 0; i < resolutions.Length; i++)
+        foreach (var res in resolutions)
         {
-            string option = $"{resolutions[i].width} x {resolutions[i].height}";
+            string option = $"{res.width} x {res.height}";
             if (!options.Contains(option))
                 options.Add(option);
         }
 
         resolutionDropdown.AddOptions(options);
 
-        // Load saved settings or use defaults
         int savedResIndex = PlayerPrefs.GetInt("ResolutionIndex", options.IndexOf(currentRes));
         resolutionDropdown.value = savedResIndex;
         resolutionDropdown.RefreshShownValue();
@@ -49,8 +52,11 @@ public class SettingsManager : MonoBehaviour
         musicSlider.value = PlayerPrefs.GetFloat("MusicVolume", defaultMusicVolume);
         sfxSlider.value = PlayerPrefs.GetFloat("SFXVolume", defaultSFXVolume);
 
-        ApplySettings(); // Apply loaded values to game
+        OnMasterVolumeChanged(masterSlider.value);
+        OnMusicVolumeChanged(musicSlider.value);
+        OnSFXVolumeChanged(sfxSlider.value);
     }
+
 
     public void OpenSettings() => settingsPanel.SetActive(true);
     public void CloseSettings() => settingsPanel.SetActive(false);
@@ -82,12 +88,40 @@ public class SettingsManager : MonoBehaviour
         PlayerPrefs.Save();
     }
 
+    public void ResetToDefaults()
+    {
+        // Set sliders to default values
+        masterSlider.value = defaultMasterVolume;
+        musicSlider.value = defaultMusicVolume;
+        sfxSlider.value = defaultSFXVolume;
+
+        // Apply volumes to mixer immediately (but do not save)
+        OnMasterVolumeChanged(masterSlider.value);
+        OnMusicVolumeChanged(musicSlider.value);
+        OnSFXVolumeChanged(sfxSlider.value);
+
+        //reset fullscreen and resolution
+        fullscreenToggle.isOn = false;
+
+        // Try to find default resolution (e.g. highest or current)
+        string defaultRes = $"{Screen.currentResolution.width} x {Screen.currentResolution.height}";
+        int defaultResIndex = resolutionDropdown.options.FindIndex(o => o.text == defaultRes);
+        resolutionDropdown.value = defaultResIndex >= 0 ? defaultResIndex : 0;
+        resolutionDropdown.RefreshShownValue();
+
+        Debug.Log("Settings reset to defaults (not saved yet).");
+    }
+
+
     private void SetMixerVolume(string parameter, float sliderValue)
     {
         float volume = Mathf.Log10(Mathf.Max(sliderValue, 0.001f)) * 20f;
         audioMixer.SetFloat(parameter, volume);
     }
 
+    public void OnMasterVolumeChanged(float value) => SetMixerVolume("MasterVolume", value);
     public void OnMusicVolumeChanged(float value) => SetMixerVolume("MusicVolume", value);
+    public void OnSFXVolumeChanged(float value) => SetMixerVolume("SFXVolume", value);
+
 
 }

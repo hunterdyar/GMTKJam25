@@ -60,6 +60,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -4848524556077884099, guid: 7c6f46b6cc886734f8cd624ec136d625, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: b11e8c01fbc33dd41985bc3fd30410f4, type: 2}
     - target: {fileID: 919132149155446097, guid: 7c6f46b6cc886734f8cd624ec136d625, type: 3}
       propertyPath: m_Name
       value: Spring
@@ -143,6 +147,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   launchForce: 25
   launchDirection: {x: 0, y: 1, z: 0}
+  audioSource: {fileID: 453708169517722694}
+  launchSound: {fileID: 8300000, guid: 79abee919824ba64b8cc4ddd7b038100, type: 3}
+  animator: {fileID: 7816147786319265604}
+  launchTriggerName: Launch
+  cooldownDuration: 0.5
 --- !u!82 &453708169517722694
 AudioSource:
   m_ObjectHideFlags: 0

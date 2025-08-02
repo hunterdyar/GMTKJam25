@@ -24,7 +24,7 @@ public class MusicManager : MonoBehaviour
         audioSource.clip = backgroundMusic;
         audioSource.loop = true;
         audioSource.playOnAwake = false;
-        audioSource.volume = 0.6f;
+        audioSource.volume = 0.5f;
         audioSource.Play();
     }
 }

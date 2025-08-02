@@ -3,6 +3,9 @@ using static MenuCharacterController;
 
 public class SpineIKMenuIdleController : MonoBehaviour
 {
+
+    private MenuCharacterController controller;
+
     [Header("Idle Bob")]
     [SerializeField] private float idleBobAmplitude = 0.02f;
     [SerializeField] private float idleBobFrequency = 1.5f;
@@ -20,16 +23,6 @@ public class SpineIKMenuIdleController : MonoBehaviour
     [SerializeField] private Vector3 wanderOffset = new Vector3(0f, 0f, -0.05f);
     [SerializeField] private Vector3 wanderRotation = new Vector3(-10f, 0f, 0f);
 
-
-    [Header("Face Expression")]
-    [SerializeField] private SkinnedMeshRenderer faceRenderer;
-    [SerializeField] private Material defaultFaceMaterial;
-    [SerializeField] private Material[] idleExpressions;
-    [SerializeField] private float expressionChance = 0.3f;
-    [SerializeField] private float expressionDuration = 2f;
-
-    private float expressionTimer = 0f;
-    private bool isUsingExpression = false;
     private bool isReturningToCenter = false;
 
     private Vector3 initialLocalPosition;
@@ -42,6 +35,8 @@ public class SpineIKMenuIdleController : MonoBehaviour
 
     void Start()
     {
+        controller = GetComponentInParent<MenuCharacterController>();
+
         initialLocalPosition = transform.localPosition;
         initialLocalRotation = transform.localRotation;
         targetIdleRotation = initialLocalRotation;
@@ -58,19 +53,6 @@ public class SpineIKMenuIdleController : MonoBehaviour
         {
             idleTurnCooldown = Random.Range(idleTurnFrequency * 0.8f, idleTurnFrequency * 1.2f);
             idleTurnTimer = idleTurnDuration;
-
-            if (!MenuCharacterState.IsJumping && !isUsingExpression && idleExpressions.Length > 0 && Random.value < expressionChance)
-            {
-                int index = Random.Range(0, idleExpressions.Length);
-                Material[] mats = faceRenderer.materials;
-                if (mats.Length > 7)
-                {
-                    mats[7] = idleExpressions[index];
-                    faceRenderer.materials = mats;
-                    isUsingExpression = true;
-                    expressionTimer = expressionDuration;
-                }
-            }
 
             float angle = Random.Range(-maxIdleTurnAngle, maxIdleTurnAngle);
             targetIdleRotation = initialLocalRotation * Quaternion.Euler(0f, angle, 0f);
@@ -98,7 +80,7 @@ public class SpineIKMenuIdleController : MonoBehaviour
         Vector3 targetPosition = initialLocalPosition + targetOffset;
         Quaternion targetRot = targetIdleRotation;
 
-        if (MenuCharacterState.IsWandering)
+        if (controller != null && controller.currentState == MenuCharacterController.CharacterState.Wandering)
         {
             targetPosition += wanderOffset;
             targetRot *= Quaternion.Euler(wanderRotation);
@@ -106,23 +88,5 @@ public class SpineIKMenuIdleController : MonoBehaviour
 
         transform.localPosition = Vector3.Lerp(transform.localPosition, targetPosition, Time.deltaTime * springSpeed);
         transform.localRotation = Quaternion.Lerp(transform.localRotation, targetRot, Time.deltaTime * idleTurnSpeed);
-
-
-
-        // --- Reset Expression ---
-        if (isUsingExpression)
-        {
-            expressionTimer -= Time.deltaTime;
-            if (expressionTimer <= 0f)
-            {
-                Material[] mats = faceRenderer.materials;
-                if (mats.Length > 7)
-                {
-                    mats[7] = defaultFaceMaterial;
-                    faceRenderer.materials = mats;
-                }
-                isUsingExpression = false;
-            }
-        }
     }
 }

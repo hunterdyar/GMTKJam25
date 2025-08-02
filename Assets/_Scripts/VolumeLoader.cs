@@ -7,9 +7,9 @@ public class VolumeLoader : MonoBehaviour
 
     void Start()
     {
-        float master = PlayerPrefs.GetFloat("MasterVolume", 0.7f);
-        float music = PlayerPrefs.GetFloat("MusicVolume", 0.7f);
-        float sfx = PlayerPrefs.GetFloat("SFXVolume", 0.7f);
+        float master = PlayerPrefs.GetFloat("MasterVolume", 0.5f);
+        float music = PlayerPrefs.GetFloat("MusicVolume", 0.5f);
+        float sfx = PlayerPrefs.GetFloat("SFXVolume", 0.5f);
 
         ApplyVolume("MasterVolume", master);
         ApplyVolume("MusicVolume", music);

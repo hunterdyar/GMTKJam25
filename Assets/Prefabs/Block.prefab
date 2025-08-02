@@ -42,11 +42,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 070643d5351319d42a0483e57f596814, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -10.37
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 070643d5351319d42a0483e57f596814, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.6
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 070643d5351319d42a0483e57f596814, type: 3}
       propertyPath: m_LocalPosition.z
@@ -113,7 +113,7 @@ MeshCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7191491581383365804}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 2aff4c943565bb5438e6c870d9de0600, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0

@@ -8,6 +8,11 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private PlatformerGameInput gameInput;
     [SerializeField] private Camera playerCamera;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip jumpSound;
+    private bool hasJumped = false;
+
     [Header("Movement Settings")]
     public float moveSpeed = 22f;
     public float turnSpeed = 10f;
@@ -90,9 +95,9 @@ public class PlayerMovement : MonoBehaviour
         {
             coyoteTimer -= Time.fixedUnscaledDeltaTime;
         }
-        
+
         // Jump logic
-        if (jumpBufferTimer > 0f && (coyoteTimer > 0f || isTouchingWall))
+        if (!hasJumped && jumpBufferTimer > 0f && (coyoteTimer > 0f || isTouchingWall))
         {
             PerformJump();
 
@@ -102,8 +107,14 @@ public class PlayerMovement : MonoBehaviour
             }
 
             jumpBufferTimer = -1f;
+            hasJumped = true;
         }
-        
+
+        if (isGrounded && hasJumped)
+        {
+            hasJumped = false;
+        }
+
         PhysicsTick();
     }
 
@@ -150,6 +161,11 @@ public class PlayerMovement : MonoBehaviour
     {
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z); // reset vertical
         rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+
+        if (audioSource != null && jumpSound != null)
+        {
+            audioSource.PlayOneShot(jumpSound);
+        }
     }
 
     private bool IsOnGround()
@@ -215,5 +231,24 @@ public class PlayerMovement : MonoBehaviour
     public bool IsGrounded => isGrounded;
 
     public bool IsMoving => inputDirection.sqrMagnitude > 0.01f;
+
+    private Transform rotatingPlatform;
+
+    private void OnCollisionStay(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("RotatingPlatform"))
+        {
+            rotatingPlatform = collision.transform;
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.transform == rotatingPlatform)
+        {
+            rotatingPlatform = null;
+        }
+    }
+
 
 }

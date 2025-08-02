@@ -147,6 +147,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   launchForce: 25
   launchDirection: {x: 0, y: 1, z: 0}
+  audioSource: {fileID: 453708169517722694}
+  launchSound: {fileID: 8300000, guid: 79abee919824ba64b8cc4ddd7b038100, type: 3}
+  animator: {fileID: 7816147786319265604}
+  launchTriggerName: Launch
+  cooldownDuration: 0.5
 --- !u!82 &453708169517722694
 AudioSource:
   m_ObjectHideFlags: 0

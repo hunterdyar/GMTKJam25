@@ -3,33 +3,40 @@ using UnityEngine;
 
 namespace GMTK
 {
-	public class Collectable : Interactable
-	{
-		private MeshRenderer _meshRenderer;
-		//for tracking when we need to switch visuals, not a source of truth.
-		private bool _hasBeenCollected;
-		
+    public class Collectable : Interactable
+    {
+        private MeshRenderer _meshRenderer;
+        private bool _hasBeenCollected;
 
-		void Start()
-		{
-			SetCollected(false);
-		}
+        [Header("Audio")]
+        [SerializeField] private AudioSource audioSource;
+        [SerializeField] private AudioClip collectSound;
 
-		private void Update()
-		{
-			if (HasBeenInteractedWith != _hasBeenCollected)
-			{
-				SetCollected(HasBeenInteractedWith);
-			}
-		}
+        void Start()
+        {
+            SetCollected(false);
+        }
 
-		private void SetCollected(bool collected)
-		{
-			_hasBeenCollected = collected;
-			foreach (Transform child in transform)
-			{
-				child.gameObject.SetActive(!collected);
-			}
-		}
-	}
+        private void Update()
+        {
+            if (HasBeenInteractedWith != _hasBeenCollected)
+            {
+                SetCollected(HasBeenInteractedWith);
+
+                if (_hasBeenCollected && audioSource != null && collectSound != null)
+                {
+                    audioSource.PlayOneShot(collectSound);
+                }
+            }
+        }
+
+        private void SetCollected(bool collected)
+        {
+            _hasBeenCollected = collected;
+            foreach (Transform child in transform)
+            {
+                child.gameObject.SetActive(!collected);
+            }
+        }
+    }
 }

@@ -1,3 +1,4 @@
+using Mono.Cecil.Cil;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -30,6 +31,29 @@ public class CameraFollow : MonoBehaviour
         new Vector3Int(0, 0, 1), //up
     };
 
+    public float[] LookXToWorldX =
+    {
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+    };
+
+    public float[] LookYToWorldY =
+    {
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+    };
     private Vector3 _currentVelocity;
 
     void Awake()
@@ -66,8 +90,14 @@ public class CameraFollow : MonoBehaviour
         LookDir = (LookDirs.Length+ --LookDir)%LookDirs.Length;
     }
 
-    public Vector3 InputDirToWorldDir(Vector2 input)
+    public Vector3 InputDirToWorldDir(Vector2 input, float worldRotate = -45)
     {
+        var facing = Quaternion.Euler(0, worldRotate, 0)*(Vector3)LookDirs[LookDir];
+        var ind = new Vector3(input.x, 0, input.y).normalized;
+        
+        return Quaternion.LookRotation(facing, Vector3.up) * ind;
+        
+        //todo: if transform.position isn't desired position, then this is wrong.
         return transform.TransformDirection(new Vector3(input.x, 0, input.y).normalized);
 
         // return transform.InverseTransformDirection(new Vector3(input.x, 0, input.y).normalized);

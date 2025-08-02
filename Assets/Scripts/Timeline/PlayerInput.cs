@@ -11,6 +11,7 @@ namespace GMTK
         private TimelineRunner _runner;
         [Header("Scene References")]
         [SerializeField] private CameraFollow _cameraRig;
+        [Header("Input Settings")] public float worldRotate = -45;
         [Header("Player Game Controls")]
         public InputActionReference _jumpAction;
         public InputActionReference _moveAction;
@@ -249,7 +250,7 @@ namespace GMTK
         
         public Buttons DirToMovement(Vector2 inputDir)
         {
-            Vector3 dir = _cameraRig.InputDirToWorldDir(inputDir);
+            Vector3 dir = _cameraRig.InputDirToWorldDir(inputDir, worldRotate);
             var h = Mathf.RoundToInt(dir.normalized.x);
             var v = Mathf.RoundToInt(dir.normalized.z);
             Buttons b = 0;

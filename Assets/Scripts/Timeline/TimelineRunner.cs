@@ -66,6 +66,7 @@ namespace GMTK
 
 		private void Start()
 		{
+			_state = RunnerControlState.Playback;
 			Playing = false;
 			Timeline.Init(30*50);
 			//save first position.
@@ -166,6 +167,32 @@ namespace GMTK
 				//i know we don't actually need the else but I am anticipating future states.
 				_state = RunnerControlState.Playback;
 				OnStateChange?.Invoke(_state);
+			}
+		}
+
+		public void SetIsScrubbing(bool isScrubbing)
+		{
+			
+			if (isScrubbing)
+			{
+				if (_state == RunnerControlState.Recording)
+				{
+					PauseIfPlaying();
+				}
+				
+				if (_state != RunnerControlState.Scrubbing)
+				{
+					_state = RunnerControlState.Scrubbing;
+					OnStateChange?.Invoke(_state);
+				}
+			}
+			else
+			{
+				if (_state == RunnerControlState.Scrubbing)
+				{
+					_state = RunnerControlState.Playback;
+					OnStateChange?.Invoke(_state);
+				}
 			}
 		}
 	}

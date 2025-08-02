@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace GMTK
@@ -289,6 +288,11 @@ namespace GMTK
 			}
 
 			if (frame > MaxFrame)
+			{
+				return;
+			}
+
+			if (frame < 0)
 			{
 				return;
 			}

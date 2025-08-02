@@ -57,6 +57,8 @@ namespace GMTK
 
         void Update()
         {
+            bool isScrubbing = false;
+
             if (_playPauseToggle.action.WasPerformedThisFrame())
             {
                 _runner.PlayPauseToggle();
@@ -71,17 +73,19 @@ namespace GMTK
             {
                 _runner.PauseIfPlaying();
                 _runner.StepForwardOne();
+                isScrubbing = true;
             }else if (_stepBackwardsOne.action.WasPerformedThisFrame())
             {
                 _runner.PauseIfPlaying();
                 _runner.ScrubJumpToFrame(_runner.Timeline.CurrentDisplayedFrame -1);
-
+                isScrubbing = true;
             }
 
             float leftTrigger = _jumpBackward.action.ReadValue<float>();
             float rightTrigger = _jumpForward.action.ReadValue<float>();
             if (rightTrigger > 0 || leftTrigger > 0)
             {
+                isScrubbing = true;
                 _scrubDeltaCounter += rightTrigger*Time.deltaTime*_scrubTriggerSensitivity;
                 _scrubDeltaCounter -= leftTrigger*Time.deltaTime*_scrubTriggerSensitivity;
                 _runner.PauseIfPlaying();
@@ -111,11 +115,14 @@ namespace GMTK
             bool scrubbing = _holdToScrubWithMove.action.IsPressed();
             if (scrubbing)
             {
+                isScrubbing = true;
                 _runner.PauseIfPlaying();
                 //stop recording if recording?
                 int delta = (Mathf.RoundToInt(_moveAction.action.ReadValue<Vector2>().x));
                 _runner.ScrubJumpToFrame(_runner.Timeline.CurrentDisplayedFrame + (delta));
             }
+
+            _runner.SetIsScrubbing(isScrubbing);
             
             if (_runner.State == RunnerControlState.Recording && _runner.Playing)
             {

@@ -98,8 +98,7 @@ public class CameraFollow : MonoBehaviour
         return Quaternion.LookRotation(facing, Vector3.up) * ind;
         
         //todo: if transform.position isn't desired position, then this is wrong.
-        return transform.TransformDirection(new Vector3(input.x, 0, input.y).normalized);
-
+        //return transform.TransformDirection(new Vector3(input.x, 0, input.y).normalized);
         // return transform.InverseTransformDirection(new Vector3(input.x, 0, input.y).normalized);
     }
 

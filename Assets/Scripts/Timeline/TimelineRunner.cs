@@ -89,7 +89,7 @@ namespace GMTK
 
 		private void FixedUpdate()
 		{
-			if (Playing)
+			if (Playing && _gameManager.GameState == GameState.PlayingOrRecording ||_gameManager.GameState == GameState.NotStarted)
 			{
 				Timeline.Tick(_state == RunnerControlState.Recording);
 			}

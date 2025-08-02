@@ -8,6 +8,7 @@ namespace UI
 	{
 		private GameState _visibleState;
 		private bool _visibleIsPlayingState;
+		private RunnerControlState _visibleRunnerState;
 		
 		public GameObject TimeUpGameOverObject;
 		public GameObject SuccessGameOverObject;
@@ -22,27 +23,40 @@ namespace UI
 		private void OnEnable()
 		{
 			GameManager.OnGameStateChange += OnStateChange;
+			TimelineRunner.OnPlaybackChange +=  OnPlaybackChange;
+			TimelineRunner.OnStateChange += OnTRStateChange;
+
 		}
 
+		
 		private void OnDisable()
 		{
 			GameManager.OnGameStateChange -= OnStateChange;
+			TimelineRunner.OnPlaybackChange -= OnPlaybackChange;
+			TimelineRunner.OnStateChange -= OnTRStateChange;
 		}
 		
 		private void OnStateChange(GameState state)
 		{
-			UpdatePanel(state, _visibleIsPlayingState);
+			UpdatePanel(state, _visibleRunnerState, _visibleIsPlayingState);
 		}
 
 		private void OnPlaybackChange(bool playing)
 		{
-			UpdatePanel(_visibleState, playing);
+			UpdatePanel(_visibleState,_visibleRunnerState, playing);
 		}
 
-		private void UpdatePanel(GameState state, bool playing)
+		private void OnTRStateChange(RunnerControlState rs)
+		{
+			UpdatePanel(_visibleState, rs, _visibleIsPlayingState);
+		}
+
+
+		private void UpdatePanel(GameState state, RunnerControlState runnerState, bool playing)
 		{
 			_visibleState = state;
 			_visibleIsPlayingState = playing;
+			_visibleRunnerState = runnerState;
 			//
 			//have we started yet?
 			TimeUpGameOverObject.SetActive(state == GameState.TimeIsUp);
@@ -50,7 +64,7 @@ namespace UI
 			NotStartedObject.SetActive(state == GameState.NotStarted);
 			
 			//set playback
-			if (state == GameState.Playing && playing)
+			if (runnerState == RunnerControlState.Playback && playing)
 			{
 				PlaybackObject.SetActive(true);
 			}

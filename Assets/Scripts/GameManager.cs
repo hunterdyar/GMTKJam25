@@ -6,7 +6,7 @@ using UnityEngine;
 public enum GameState
 {
 	NotStarted,
-	Playing,
+	PlayingOrRecording,
 	TimeIsUp,
 	AllCollected,
 }
@@ -37,7 +37,7 @@ namespace GMTK
 		
 		private void OnInput(int frame, GameInput input, bool instant)
 		{
-			if (frame <= 1)
+			if (frame <= 0)
 			{
 				SetGameState(GameState.NotStarted);
 			}else if (frame >= _timeline.MaxFrame)
@@ -49,7 +49,7 @@ namespace GMTK
 			}
 			else
 			{
-				SetGameState(GameState.Playing);
+				SetGameState(GameState.PlayingOrRecording);
 			}
 		}
 

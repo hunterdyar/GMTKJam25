@@ -60,22 +60,22 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "JumpNext",
-                    "type": "Button",
+                    "name": "ScrubRight",
+                    "type": "Value",
                     "id": "2ac75fed-9b64-42f7-91cb-39145bd242f8",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 },
                 {
-                    "name": "JumpPrev",
-                    "type": "Button",
+                    "name": "ScrubLeft",
+                    "type": "Value",
                     "id": "96420cf9-3c74-4a05-b00a-2fbb4245ba04",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 },
                 {
                     "name": "ToggleRecording",
@@ -494,7 +494,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
-                    "action": "JumpNext",
+                    "action": "ScrubRight",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -505,7 +505,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
-                    "action": "JumpPrev",
+                    "action": "ScrubLeft",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

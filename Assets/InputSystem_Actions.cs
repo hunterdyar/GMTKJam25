@@ -146,22 +146,22 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""JumpNext"",
-                    ""type"": ""Button"",
+                    ""name"": ""ScrubRight"",
+                    ""type"": ""Value"",
                     ""id"": ""2ac75fed-9b64-42f7-91cb-39145bd242f8"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
-                    ""initialStateCheck"": false
+                    ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""JumpPrev"",
-                    ""type"": ""Button"",
+                    ""name"": ""ScrubLeft"",
+                    ""type"": ""Value"",
                     ""id"": ""96420cf9-3c74-4a05-b00a-2fbb4245ba04"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
-                    ""initialStateCheck"": false
+                    ""initialStateCheck"": true
                 },
                 {
                     ""name"": ""ToggleRecording"",
@@ -580,7 +580,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Gamepad"",
-                    ""action"": ""JumpNext"",
+                    ""action"": ""ScrubRight"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -591,7 +591,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Gamepad"",
-                    ""action"": ""JumpPrev"",
+                    ""action"": ""ScrubLeft"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -1262,8 +1262,8 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
         m_Player_PreviousFrame = m_Player.FindAction("PreviousFrame", throwIfNotFound: true);
         m_Player_NextFrame = m_Player.FindAction("NextFrame", throwIfNotFound: true);
-        m_Player_JumpNext = m_Player.FindAction("JumpNext", throwIfNotFound: true);
-        m_Player_JumpPrev = m_Player.FindAction("JumpPrev", throwIfNotFound: true);
+        m_Player_ScrubRight = m_Player.FindAction("ScrubRight", throwIfNotFound: true);
+        m_Player_ScrubLeft = m_Player.FindAction("ScrubLeft", throwIfNotFound: true);
         m_Player_ToggleRecording = m_Player.FindAction("ToggleRecording", throwIfNotFound: true);
         m_Player_TogglePlayback = m_Player.FindAction("TogglePlayback", throwIfNotFound: true);
         m_Player_Scrub = m_Player.FindAction("Scrub", throwIfNotFound: true);
@@ -1368,8 +1368,8 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Jump;
     private readonly InputAction m_Player_PreviousFrame;
     private readonly InputAction m_Player_NextFrame;
-    private readonly InputAction m_Player_JumpNext;
-    private readonly InputAction m_Player_JumpPrev;
+    private readonly InputAction m_Player_ScrubRight;
+    private readonly InputAction m_Player_ScrubLeft;
     private readonly InputAction m_Player_ToggleRecording;
     private readonly InputAction m_Player_TogglePlayback;
     private readonly InputAction m_Player_Scrub;
@@ -1411,13 +1411,13 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @NextFrame => m_Wrapper.m_Player_NextFrame;
         /// <summary>
-        /// Provides access to the underlying input action "Player/JumpNext".
+        /// Provides access to the underlying input action "Player/ScrubRight".
         /// </summary>
-        public InputAction @JumpNext => m_Wrapper.m_Player_JumpNext;
+        public InputAction @ScrubRight => m_Wrapper.m_Player_ScrubRight;
         /// <summary>
-        /// Provides access to the underlying input action "Player/JumpPrev".
+        /// Provides access to the underlying input action "Player/ScrubLeft".
         /// </summary>
-        public InputAction @JumpPrev => m_Wrapper.m_Player_JumpPrev;
+        public InputAction @ScrubLeft => m_Wrapper.m_Player_ScrubLeft;
         /// <summary>
         /// Provides access to the underlying input action "Player/ToggleRecording".
         /// </summary>
@@ -1482,12 +1482,12 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @NextFrame.started += instance.OnNextFrame;
             @NextFrame.performed += instance.OnNextFrame;
             @NextFrame.canceled += instance.OnNextFrame;
-            @JumpNext.started += instance.OnJumpNext;
-            @JumpNext.performed += instance.OnJumpNext;
-            @JumpNext.canceled += instance.OnJumpNext;
-            @JumpPrev.started += instance.OnJumpPrev;
-            @JumpPrev.performed += instance.OnJumpPrev;
-            @JumpPrev.canceled += instance.OnJumpPrev;
+            @ScrubRight.started += instance.OnScrubRight;
+            @ScrubRight.performed += instance.OnScrubRight;
+            @ScrubRight.canceled += instance.OnScrubRight;
+            @ScrubLeft.started += instance.OnScrubLeft;
+            @ScrubLeft.performed += instance.OnScrubLeft;
+            @ScrubLeft.canceled += instance.OnScrubLeft;
             @ToggleRecording.started += instance.OnToggleRecording;
             @ToggleRecording.performed += instance.OnToggleRecording;
             @ToggleRecording.canceled += instance.OnToggleRecording;
@@ -1532,12 +1532,12 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @NextFrame.started -= instance.OnNextFrame;
             @NextFrame.performed -= instance.OnNextFrame;
             @NextFrame.canceled -= instance.OnNextFrame;
-            @JumpNext.started -= instance.OnJumpNext;
-            @JumpNext.performed -= instance.OnJumpNext;
-            @JumpNext.canceled -= instance.OnJumpNext;
-            @JumpPrev.started -= instance.OnJumpPrev;
-            @JumpPrev.performed -= instance.OnJumpPrev;
-            @JumpPrev.canceled -= instance.OnJumpPrev;
+            @ScrubRight.started -= instance.OnScrubRight;
+            @ScrubRight.performed -= instance.OnScrubRight;
+            @ScrubRight.canceled -= instance.OnScrubRight;
+            @ScrubLeft.started -= instance.OnScrubLeft;
+            @ScrubLeft.performed -= instance.OnScrubLeft;
+            @ScrubLeft.canceled -= instance.OnScrubLeft;
             @ToggleRecording.started -= instance.OnToggleRecording;
             @ToggleRecording.performed -= instance.OnToggleRecording;
             @ToggleRecording.canceled -= instance.OnToggleRecording;
@@ -1896,19 +1896,19 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnNextFrame(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "JumpNext" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "ScrubRight" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnJumpNext(InputAction.CallbackContext context);
+        void OnScrubRight(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "JumpPrev" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "ScrubLeft" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnJumpPrev(InputAction.CallbackContext context);
+        void OnScrubLeft(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "ToggleRecording" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

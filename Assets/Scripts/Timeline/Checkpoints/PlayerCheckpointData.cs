@@ -26,7 +26,7 @@ namespace GMTK
 			Position = _rb.position;
 			Rotation = _rb.rotation;
 			LinearVelocity = _rb.linearVelocity;
-			Debug.Log("player lvy get:"+_rb.linearVelocity.y);
+			//Debug.Log("player lvy get:"+_rb.linearVelocity.y);
 			AngularVelocity = _rb.angularVelocity;
 			InputDir = _player.inputDirection;
 			MoveSpeed = _player.moveSpeed;
@@ -41,7 +41,7 @@ namespace GMTK
 			_rb.position = Position;
 			_rb.rotation = Rotation;
 			_rb.linearVelocity = LinearVelocity;
-			Debug.Log("player lvy set:" + LinearVelocity.y);
+			//Debug.Log("player lvy set:" + LinearVelocity.y);
 			_rb.angularVelocity = AngularVelocity;
 			_player.inputDirection = InputDir;
 			_player.moveSpeed = MoveSpeed;

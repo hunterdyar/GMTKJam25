@@ -10,7 +10,6 @@ namespace GMTK
     {
         private TimelineRunner _runner;
         [Header("Scene References")]
-        [SerializeField] private UIScrubController _scrubber;
         [SerializeField] private CameraFollow _cameraRig;
         [Header("Player Game Controls")]
         public InputActionReference _jumpAction;
@@ -24,6 +23,8 @@ namespace GMTK
         public InputActionReference _jumpForward;
         public InputActionReference _jumpBackward;
         public InputActionReference _holdToScrubWithMove;
+
+        public float _scrubTriggerSensitivity = 1;
         //
         private GameInput _gameInput;
         [CanBeNull] private ButtonEvent _currentJumpEvent;
@@ -37,6 +38,8 @@ namespace GMTK
         private bool _jumpReleasedThisFrame;
         private bool _movePressedThisFrame;
         private bool _moveReleasedThisFrame;
+
+        private float _scrubDeltaCounter;
         private void Awake()
         {
             _runner = GetComponent<TimelineRunner>();
@@ -67,29 +70,51 @@ namespace GMTK
             if (_stepForwardsOne.action.WasPerformedThisFrame())
             {
                 _runner.PauseIfPlaying();
-                _scrubber.StepRight();
+                _runner.StepForwardOne();
             }else if (_stepBackwardsOne.action.WasPerformedThisFrame())
             {
                 _runner.PauseIfPlaying();
-                _scrubber.StepLeft();
-            }else if (_jumpForward.action.WasPerformedThisFrame())
-            {
-                _runner.PauseIfPlaying();
-                _scrubber.JumpRight();
-            }else if (_jumpBackward.action.WasPerformedThisFrame())
-            {
-                _runner.PauseIfPlaying();
-                _scrubber.JumpLeft();
+                _runner.ScrubJumpToFrame(_runner.Timeline.CurrentDisplayedFrame -1);
+
             }
 
+            float leftTrigger = _jumpBackward.action.ReadValue<float>();
+            float rightTrigger = _jumpForward.action.ReadValue<float>();
+            if (rightTrigger > 0 || leftTrigger > 0)
+            {
+                _scrubDeltaCounter += rightTrigger*Time.deltaTime*_scrubTriggerSensitivity;
+                _scrubDeltaCounter -= leftTrigger*Time.deltaTime*_scrubTriggerSensitivity;
+                _runner.PauseIfPlaying();
+                int frames;
+                
+                if (_scrubDeltaCounter >= 0)
+                {
+                    frames = Mathf.FloorToInt(_scrubDeltaCounter);
+                }
+                else
+                {
+                    frames = Mathf.CeilToInt(_scrubDeltaCounter);
+
+                }
+                
+                if (Mathf.Abs(frames) > 0)
+                {
+                    _runner.ScrubJumpToFrame(_runner.Timeline.CurrentDisplayedFrame + frames);
+                    _scrubDeltaCounter -= frames;
+                }
+            }
+            else
+            {
+                _scrubDeltaCounter = 0;
+            }
+            
             bool scrubbing = _holdToScrubWithMove.action.IsPressed();
-            _scrubber.SetScrubbing(scrubbing);
             if (scrubbing)
             {
                 _runner.PauseIfPlaying();
                 //stop recording if recording?
                 int delta = (Mathf.RoundToInt(_moveAction.action.ReadValue<Vector2>().x));
-                _scrubber.Scrub(delta);
+                _runner.ScrubJumpToFrame(_runner.Timeline.CurrentDisplayedFrame + (delta));
             }
             
             if (_runner.State == RunnerControlState.Recording && _runner.Playing)

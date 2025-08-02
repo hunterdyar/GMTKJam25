@@ -8,6 +8,7 @@ namespace GMTK
 	public enum RunnerControlState
 	{
 		Playback,
+		Scrubbing,
 		Recording,
 	}
 	public class TimelineRunner : MonoBehaviour

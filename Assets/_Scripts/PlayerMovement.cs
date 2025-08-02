@@ -99,7 +99,7 @@ public class PlayerMovement : MonoBehaviour
         // Jump logic
         if (!hasJumped && jumpBufferTimer > 0f && (coyoteTimer > 0f || isTouchingWall))
         {
-            PerformJump();
+            PerformJump(instant);
 
             if (isTouchingWall)
             {
@@ -157,13 +157,14 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void PerformJump()
+    private void PerformJump(bool instant)
     {
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z); // reset vertical
         rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
 
-        if (audioSource != null && jumpSound != null)
+        if (!instant && audioSource != null && jumpSound != null)
         {
+            Debug.Log("jumpsound");
             audioSource.PlayOneShot(jumpSound);
         }
     }

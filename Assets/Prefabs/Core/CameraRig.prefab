@@ -185,7 +185,8 @@ MonoBehaviour:
   target: {fileID: 0}
   _lookLeft: {fileID: 3982713402756122501, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   _lookRight: {fileID: 4161874764660468206, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  offsetDistance: 10
+  Only4Dirs: 0
+  offsetDistance: 7
   followSpeed: 5
   lookAtTarget: 1
   LookDir: 0

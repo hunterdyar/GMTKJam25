@@ -1,5 +1,4 @@
 using UnityEngine;
-using static MenuCharacterController;
 
 public class RobotArmMenuIKController : MonoBehaviour
 {
@@ -25,11 +24,14 @@ public class RobotArmMenuIKController : MonoBehaviour
     private bool isJumpRaising = false;
     private float jumpTimer = 0f;
 
+    private MenuCharacterController characterController;
+
     void Start()
     {
         initialLocalPosition = transform.localPosition;
         initialLocalRotation = transform.localRotation;
         jumpRotation = initialLocalRotation * Quaternion.Euler(180f, 0f, 0f);
+        characterController = GetComponentInParent<MenuCharacterController>();
     }
 
     void Update()
@@ -57,7 +59,7 @@ public class RobotArmMenuIKController : MonoBehaviour
             float idleSway = Mathf.Sin(Time.time * idleSwayFrequency + (isLeftHand ? 0f : Mathf.PI)) * idleSwayAmplitude;
             targetPosition += idleSwayAxis.normalized * idleSway;
 
-            if (MenuCharacterState.IsWandering)
+            if (characterController != null && characterController.currentState == MenuCharacterController.CharacterState.Wandering)
             {
                 targetPosition += wanderArmOffset;
                 finalRotation *= Quaternion.Euler(wanderArmRotation);
@@ -66,7 +68,6 @@ public class RobotArmMenuIKController : MonoBehaviour
 
         float speed = isJumpRaising ? jumpRaiseSpeed : 5f;
 
-        // Apply directly to this target object
         transform.localPosition = Vector3.Lerp(transform.localPosition, targetPosition, Time.deltaTime * speed);
         transform.localRotation = Quaternion.Lerp(transform.localRotation, finalRotation, Time.deltaTime * speed);
     }

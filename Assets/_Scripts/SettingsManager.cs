@@ -14,9 +14,9 @@ public class SettingsManager : MonoBehaviour
     [SerializeField] private Slider sfxSlider;
     [SerializeField] private AudioMixer audioMixer;
 
-    [SerializeField] private float defaultMasterVolume = 0.7f;
-    [SerializeField] private float defaultMusicVolume = 0.7f;
-    [SerializeField] private float defaultSFXVolume = 0.7f;
+    [SerializeField] private float defaultMasterVolume = 0.5f;
+    [SerializeField] private float defaultMusicVolume = 0.5f;
+    [SerializeField] private float defaultSFXVolume = 0.5f;
 
     private Resolution[] resolutions;
 

@@ -13,14 +13,15 @@ public class LaunchPad : MonoBehaviour
     [SerializeField] private Animator animator;
     [SerializeField] private string launchTriggerName = "Launch";
 
+    //todo: this won't work when ticking through line-by-line.
     [Header("Cooldown")]
     [SerializeField] private float cooldownDuration = 0.5f;
 
-    private bool justLaunched = false;
+    private bool _justLaunched = false;
 
     private void OnTriggerEnter(Collider other)
     {
-        if (justLaunched) return;
+        if (_justLaunched) return;
 
         Rigidbody rb = other.attachedRigidbody;
 
@@ -41,13 +42,13 @@ public class LaunchPad : MonoBehaviour
                 animator.SetTrigger(launchTriggerName);
             }
 
-            justLaunched = true;
+            _justLaunched = true;
             Invoke(nameof(ResetLaunch), cooldownDuration);
         }
     }
 
     private void ResetLaunch()
     {
-        justLaunched = false;
+        _justLaunched = false;
     }
 }

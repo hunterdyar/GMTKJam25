@@ -1611,6 +1611,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: CameraRig
       objectReference: {fileID: 0}
+    - target: {fileID: 3304983880077937658, guid: af2c5bb647032264196d5593fbae29cc, type: 3}
+      propertyPath: orthographic
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5067209186971966063, guid: af2c5bb647032264196d5593fbae29cc, type: 3}
       propertyPath: target
       value: 

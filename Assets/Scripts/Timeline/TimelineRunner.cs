@@ -23,22 +23,16 @@ namespace GMTK
 		/// </summary>
 		public bool Playing = false;
 		public int testFrame;
-
-		public InputAction _debugCreateCheckpoint;
-		public InputAction _debugGoToTestFrame; 
 		public int PendingFrame => Timeline.CurrentDisplayedFrame + 1;
 		public RunnerControlState State => _state;
 		[SerializeField]
 		private RunnerControlState _state = RunnerControlState.Playback;
-
 		private GameManager _gameManager;
+		public int MaxSecondsThisLevel = 30;
 		private void Awake()
 		{
 			_gameManager = GetComponent<GameManager>();
-			_debugCreateCheckpoint.Enable();
-			_debugGoToTestFrame.Enable();
 			_state = RunnerControlState.Playback;
-			//this is temp (FAMOUSLASTWORDS)
 			_uiTimeline = GameObject.FindFirstObjectByType<UITimelineManager>();
 		}
 
@@ -68,28 +62,15 @@ namespace GMTK
 		{
 			_state = RunnerControlState.Playback;
 			Playing = false;
-			Timeline.Init(30*50);
+			Timeline.Init(MaxSecondsThisLevel*50);
 			//save first position.
 			OnStateChange?.Invoke(_state);
 			OnPlaybackChange?.Invoke(Playing);
 		}
 
-		private void Update()
-		{
-			if (_debugCreateCheckpoint.WasPerformedThisFrame())
-			{
-				// Timeline.CreateCheckpointAtCurrent();
-			}
-
-			if (_debugGoToTestFrame.WasPerformedThisFrame())
-			{
-				Timeline.GoToFrame(testFrame);
-			}
-		}
-
 		private void FixedUpdate()
 		{
-			if (Playing && _gameManager.GameState == GameState.PlayingOrRecording ||_gameManager.GameState == GameState.NotStarted)
+			if (Playing && (_gameManager.GameState == GameState.PlayingOrRecording ||_gameManager.GameState == GameState.NotStarted))
 			{
 				Timeline.Tick(_state == RunnerControlState.Recording);
 			}
@@ -142,7 +123,13 @@ namespace GMTK
 		public void ScrubJumpToFrame(int frame)
 		{
 			StopRecordingIfRecording();
+			
 			Timeline.GoToFrame(frame);
+			if (frame < 0)
+			{
+				Playing = false;
+				_gameManager.SetGameState(GameState.NotStarted);
+			}
 		}
 
 		public void StepForwardOne()

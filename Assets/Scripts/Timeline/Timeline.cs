@@ -95,6 +95,10 @@ namespace GMTK
 
 		public void StepForwardOneFrame()
 		{
+			if (_playbackFrame >= MaxFrame)
+			{
+				return;
+			}
 			_playbackFrame = _lastTickedFrame + 1;
 			TickFrame(_playbackFrame, false);
 		}
@@ -114,11 +118,13 @@ namespace GMTK
 		
 		public void Tick(bool recording = false)
 		{
-			_playbackFrame++;
-			if (_playbackFrame >= MaxFrame || _playbackFrame < 0)
+			if (_playbackFrame >= MaxFrame || _playbackFrame < -1)
 			{
 				return;
 			}
+
+			_playbackFrame++;
+
 			//add new inputs! todo: playback vs. recording :p
 			if (recording)
 			{

@@ -234,7 +234,17 @@ public class MenuCharacterController : MonoBehaviour
     IEnumerator JumpRoutine()
     {
         currentState = CharacterState.Jumping;
-        ScheduleNextExpression(); // Reset facial expression cooldown
+
+        // Reset facial expression immediately
+        Material[] mats = faceRenderer.materials;
+        if (mats.Length > 7)
+        {
+            mats[7] = defaultFaceMaterial;
+            faceRenderer.materials = mats;
+        }
+        isUsingExpression = false;
+
+        ScheduleNextExpression(); // Schedule next cooldown
 
         if (rb != null)
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
@@ -247,6 +257,7 @@ public class MenuCharacterController : MonoBehaviour
         currentState = CharacterState.Idle;
         ScheduleNextJump();
     }
+
 
 
     void ScheduleNextJump()
@@ -315,6 +326,16 @@ public class MenuCharacterController : MonoBehaviour
             currentState = CharacterState.Waving;
             waveTimer = waveDuration;
             jumpSuppressed = true;
+
+            // Reset facial expression to default
+            Material[] mats = faceRenderer.materials;
+            if (mats.Length > 7)
+            {
+                mats[7] = defaultFaceMaterial;
+                faceRenderer.materials = mats;
+            }
+            isUsingExpression = false;
+
             ScheduleNextExpression(); // Reset facial expression cooldown
         }
     }

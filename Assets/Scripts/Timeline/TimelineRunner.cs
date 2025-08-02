@@ -10,6 +10,7 @@ namespace GMTK
 		Playback,
 		Scrubbing,
 		Recording,
+		WaitingToRecord,
 	}
 	public class TimelineRunner : MonoBehaviour
 	{
@@ -85,6 +86,51 @@ namespace GMTK
 				OnPlaybackChange?.Invoke(Playing);
 			}
 		}
+
+		public void DoToggleState()
+		{
+			//if playing, pause
+			 if (_state == RunnerControlState.Recording)
+			{
+				_state = RunnerControlState.Playback;
+
+				if (Playing)
+				{
+					Playing = false;
+					OnPlaybackChange?.Invoke(Playing);
+				}
+				OnStateChange?.Invoke(_state);
+			}else if (_state == RunnerControlState.Playback)
+			{
+				if (Playing)
+				{
+					Playing = false;
+					OnPlaybackChange?.Invoke(Playing);
+				}
+				else
+				{
+					_state = RunnerControlState.WaitingToRecord;
+					OnStateChange?.Invoke(_state);
+				} 
+			}else if (_state == RunnerControlState.WaitingToRecord) 
+			 {
+				 _state = RunnerControlState.Playback;
+				 OnStateChange?.Invoke(_state);
+			 }else if (_state == RunnerControlState.Scrubbing)
+			 {
+				 //do nothing?
+			 }
+		}
+
+		public void StartRecording()
+		{
+			_state = RunnerControlState.Recording;
+			OnStateChange?.Invoke(_state);
+			if (!Playing)
+			{
+				PlayPauseToggle();
+			}
+		}
 		public void ToggleRecordState(bool force = false)
 		{
 			if ((_gameManager.GameState == GameState.TimeIsUp || _gameManager.GameState == GameState.AllCollected))
@@ -97,15 +143,15 @@ namespace GMTK
 
 			if (_state == RunnerControlState.Playback)
 			{
-				//todo: fine for now, enter playback when not recording.
-				if (!Playing)
-				{
-					PlayPauseToggle(force);
-				}
+				// //todo: fine for now, enter playback when not recording.
+				// if (!Playing)
+				// {
+				// 	PlayPauseToggle(force);
+				// }
 				_state = RunnerControlState.Recording;
 				OnStateChange?.Invoke(_state);
 				return;
-			}else if (_state == RunnerControlState.Recording)
+			}else if (_state == RunnerControlState.Recording || _state == RunnerControlState.WaitingToRecord)
 			{
 				Timeline.ForceReleaseInput(Timeline.CurrentDisplayedFrame);
 				//i know we don't actually need the else but I am anticipating future states.
@@ -122,6 +168,11 @@ namespace GMTK
 
 		public void ScrubJumpToFrame(int frame)
 		{
+			if (_gameManager.GameState == GameState.TimeIsUp && frame < Timeline.MaxFrame)
+			{
+				//un-win the game.
+				_gameManager.SetGameState(GameState.PlayingOrRecording);
+			}
 			StopRecordingIfRecording();
 			
 			Timeline.GoToFrame(frame);

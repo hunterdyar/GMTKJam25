@@ -11,7 +11,7 @@ namespace UI
 		private Image _image;
 		public bool DisableWhenNotRecording;
 		public Color _recordingColor;
-		public Color _playbackColor;
+		public Color _primedColor;
 
 		private void Awake()
 		{
@@ -35,15 +35,20 @@ namespace UI
 
 		private void SetStateIcon(RunnerControlState state)
 		{
-			var recording = state == RunnerControlState.Recording;
-			if (DisableWhenNotRecording)
+			if (state == RunnerControlState.WaitingToRecord)
 			{
-				_image.enabled = recording;
+				_image.enabled = true;
+				_image.color= _primedColor;
+			}else if (state == RunnerControlState.Recording)
+			{
+				_image.enabled = true;
+				_image.color = _recordingColor;
 			}
-			
-			
-			_image.color = recording ? _recordingColor : _playbackColor;
-			
+			else
+			{
+				_image.enabled = false;
+				_image.color = Color.clear;
+			}
 		}
 	}
 }

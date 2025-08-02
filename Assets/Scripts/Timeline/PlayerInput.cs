@@ -62,12 +62,14 @@ namespace GMTK
 
             if (_playPauseToggle.action.WasPerformedThisFrame())
             {
-                _runner.PlayPauseToggle();
+                // _runner.PlayPauseToggle();
+                _runner.DoToggleState();
             }
 
             if (_recordModeToggle.action.WasPerformedThisFrame())
             {
-                _runner.ToggleRecordState();
+                // _runner.ToggleRecordState();
+                _runner.DoToggleState();
             }
 
             if (_stepForwardsOne.action.WasPerformedThisFrame())
@@ -125,7 +127,7 @@ namespace GMTK
 
             _runner.SetIsScrubbing(isScrubbing);
             
-            if (_runner.State == RunnerControlState.Recording && _runner.Playing)
+            if ((_runner.State == RunnerControlState.Recording && _runner.Playing) || _runner.State == RunnerControlState.WaitingToRecord)
             {
                 if (!_prevTickIsRecording)
                 {
@@ -232,6 +234,24 @@ namespace GMTK
                 {
                     _runner.Timeline.SetInputOnNextTickedFrame(_gameInput);
                 }
+            }
+            
+            if (_runner.State == RunnerControlState.WaitingToRecord)
+            {
+                if (_runner.Playing)
+                {
+                    //????
+                    Debug.Log("huh");
+                }
+                else
+                {
+                    if (_gameInput.Any())
+                    {
+                        //leave WaitingForRecord and go to Record.
+                        _runner.StartRecording();
+                    }
+                }
+                //it's not playing, so play on press while waiting!
             }
 
             void ReleaseMoveEvent()

@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/BloopsTower.unity
+    guid: fb41e5852a3b90641ab7237c739b0a14
+  - enabled: 1
     path: Assets/Scenes/MainMenu.unity
     guid: 8c34f99810b75f9459e9a0354760f3a1
   - enabled: 1

@@ -60,8 +60,6 @@ namespace UI
 
 		void Start()
 		{
-			
-			
 			OnPositionUpdate?.Invoke();
 		}
 
@@ -74,6 +72,7 @@ namespace UI
 
 		private void OnDisable()
 		{
+			Timeline.OnInput -= OnInput;
 			Timeline.OnCurrentDisplayFrameChanged -= OnCurrentDisplayFrameChanged;
 			TimelineRunner.OnStateChange -= OnIsRecordingChange;
 		}
@@ -83,7 +82,7 @@ namespace UI
 			//this frame should be centered.
 			if (_currentViewedDisplayFrame != frame)
 			{
-				//UpdateVisuals();
+				UpdateVisuals();
 			}
 		}
 		private void OnInput(int frame, GameInput input, bool instant)
@@ -104,19 +103,15 @@ namespace UI
 					AddVisibleButton(input.ArrowButton);
 				}
 			}
-
-			//update button things.
-			 if (!instant)
-			 {
-			 	UpdateVisuals();
-			 }
-
-			//UpdateVisuals();
-
+			
+			if (!instant) 
+			{ 
+				UpdateVisuals(); 
+			}
 		}
 
 		public void UpdateVisuals()
-		{
+		{ 
 			var nextStart = _timeline.CurrentDisplayedFrame - HalfFrameCount;
 			// _startDisplayFrame = _timeline.CurrentDisplayedFrame - HalfFrameCount;
 			var nextEnd = _timeline.CurrentDisplayedFrame + HalfFrameCount;
@@ -166,25 +161,35 @@ namespace UI
 			_endDisplayFrame = nextEnd;
 			_currentViewedDisplayFrame = _timeline.CurrentDisplayedFrame;
 
-			foreach (var vb in VisibleButtonEvents)
+			for (var i = VisibleButtonEvents.Count - 1; i >= 0; i--)
 			{
+				var vb = VisibleButtonEvents[i];
+				if (vb.PressFrame == vb.ReleaseFrame)
+				{
+					RemoveVisibleButton(vb);
+					continue;
+				}
+				
 				if (!_buttonChips.ContainsKey(vb))
 				{
-					Debug.LogWarning("edge case? why no button chip?"+ vb.ToString());
-					var chip = GetButtonChip(vb);
-					_buttonChips.Add(vb, chip);
+					if (vb.PressFrame != vb.ReleaseFrame)
+					{
+						Debug.LogWarning("edge case? why no button chip?" + vb.ToString());
+						var chip = GetButtonChip(vb);
+						_buttonChips.Add(vb, chip);
+					}
 				}
 				else
 				{
-					if (vb.PressFrame <= _endDisplayFrame && vb.ReleaseFrame >= _startDisplayFrame)
+					if (vb.PressFrame <= _endDisplayFrame && vb.ReleaseFrame >= _startDisplayFrame &&
+					    vb.PressFrame != vb.ReleaseFrame)
 					{
 						if (!_buttonChips[vb].gameObject.activeInHierarchy)
 						{
-							Debug.LogWarning("AYO WTF", _buttonChips[vb].gameObject);
+							_buttonChips[vb].Init(this, vb);
 						}
-					}
+					}//invalid should invalidate itself in Update(). could refactor and do it here but i aint touching the fragile code more
 				}
-
 			}
 		}
 
@@ -258,7 +263,7 @@ namespace UI
 
 				if (input.ArrowButton != null)
 				{
-					if ((frame == input.ArrowButton.ReleaseFrame && delta > 0)
+					if ((frame+1 == input.ArrowButton.ReleaseFrame && delta > 0)
 					    || (frame == input.ArrowButton.PressFrame && delta < 0))
 					{
 						if (VisibleButtonEvents.Contains(input.ArrowButton))
@@ -275,9 +280,17 @@ namespace UI
 			VisibleButtonEvents.Add(buttonEvent);
 			if (!_buttonChips.ContainsKey(buttonEvent))
 			{
-				var chip = GetButtonChip(buttonEvent);
-				chip.Init(this, buttonEvent);
-				_buttonChips.Add(buttonEvent,chip);
+				if (buttonEvent.PressFrame != buttonEvent.ReleaseFrame)
+				{
+					var chip = GetButtonChip(buttonEvent);
+					chip.gameObject.SetActive(true);
+					chip.Init(this, buttonEvent);
+					_buttonChips.Add(buttonEvent, chip);
+				}
+				else
+				{
+					//Debug.Log("Invalid press/release");
+				}
 			}
 			else
 			{
@@ -297,17 +310,25 @@ namespace UI
 
 			if (_buttonChips.ContainsKey(buttonEvent))
 			{
+				//Debug.Log($"Removing button ({buttonEvent})", _buttonChips[buttonEvent].gameObject);
 				_buttonChips[buttonEvent].gameObject.SetActive(false);
 				_buttonChips.Remove(buttonEvent);
 			}
-			// else
-			// {
-			// 	//uh, okay!
-			// }
+			else
+			{
+				//Debug.LogWarning("we lost one! a chip was added but it's settings changed.");
+				var chip = ButtonChips.Find(x=>x.ButtonEvent ==  buttonEvent);
+				if (chip != null)
+				{
+					//Debug.LogWarning("found the lost one!");
+					chip.gameObject.SetActive(false);
+				}
+			}
 		}
 
 		private UIButtonChip GetButtonChip(ButtonEvent be)
 		{
+			
 			if (_buttonChips.TryGetValue(be, out var chip))
 			{
 				chip.gameObject.SetActive(true);
@@ -365,19 +386,28 @@ namespace UI
 			return _rightEdgeChip;
 		}
 
-		public (float,float) GetFramePosition(ButtonEvent be)
+		public (float,float, bool) GetFramePosition(ButtonEvent be)
 		{
 
 			var s = be.PressFrame;
 			var e = be.ReleaseFrame;
+			bool v = true;
 			if (s < _startDisplayFrame)
 			{
-				s = _startDisplayFrame;
+				if (e < _startDisplayFrame)
+				{
+					v = false;
+				}
+				//s = _startDisplayFrame;
 			}
 
 			if (e > _endDisplayFrame)
 			{
-				e = _endDisplayFrame;
+				if (s > _endDisplayFrame)
+				{
+					v = false;
+				}
+				//e = _endDisplayFrame;
 			}
 
 			var b = 0f;
@@ -387,14 +417,30 @@ namespace UI
 			}
 			else
 			{
-				var et = Mathf.InverseLerp(StartDisplayFrame, EndDisplayFrame, e);
+				var et = InverseLerpUnclamped(StartDisplayFrame, EndDisplayFrame, e);
 				b = _rectTransform.rect.width * et;
 
 			}
 
-			var st = Mathf.InverseLerp(StartDisplayFrame, EndDisplayFrame, s);
+			var st = InverseLerpUnclamped(StartDisplayFrame, EndDisplayFrame, s);
 			var a = _rectTransform.rect.width * st;
-			return (a, b);
+			return (a, b, v);
+		}
+		
+		private static float InverseLerpUnclamped(float a, float b, float value)
+		{
+			return (double)a != (double)b
+				? (float)(((double)value - (double)a) / ((double)b - (double)a))
+				: 0.0f;
+		}
+
+		public void InvalidateButton(ButtonEvent buttonEvent, UIButtonChip uiButtonChip)
+		{
+			if (VisibleButtonEvents.Contains(buttonEvent))
+			{
+				RemoveVisibleButton(buttonEvent);
+			}
+			uiButtonChip.gameObject.SetActive(false);
 		}
 	}
 }

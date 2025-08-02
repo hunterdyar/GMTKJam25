@@ -146,22 +146,22 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""JumpNext"",
-                    ""type"": ""Button"",
+                    ""name"": ""ScrubRight"",
+                    ""type"": ""Value"",
                     ""id"": ""2ac75fed-9b64-42f7-91cb-39145bd242f8"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
-                    ""initialStateCheck"": false
+                    ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""JumpPrev"",
-                    ""type"": ""Button"",
+                    ""name"": ""ScrubLeft"",
+                    ""type"": ""Value"",
                     ""id"": ""96420cf9-3c74-4a05-b00a-2fbb4245ba04"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
-                    ""initialStateCheck"": false
+                    ""initialStateCheck"": true
                 },
                 {
                     ""name"": ""ToggleRecording"",
@@ -332,6 +332,61 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
+                    ""name"": ""2D Vector"",
+                    ""id"": ""4faf7285-de37-472e-b9e5-3ed6e2cf32f8"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""2713d07b-734f-4681-b8e6-364c3a07a7eb"",
+                    ""path"": ""<Gamepad>/dpad/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""f6fd40a0-8adf-4f12-8ab7-8c73987f2ba8"",
+                    ""path"": ""<Gamepad>/dpad/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""c1a029c6-b26b-45c9-b65f-0017ba6acf76"",
+                    ""path"": ""<Gamepad>/dpad/left"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""64206503-1104-4254-ad23-1890d9392c7d"",
+                    ""path"": ""<Gamepad>/dpad/right"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
                     ""name"": """",
                     ""id"": ""3ab07bec-b1d9-4d90-b898-f7ff9f824e37"",
                     ""path"": ""<Gamepad>/leftStick"",
@@ -499,7 +554,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""cbac6039-9c09-46a1-b5f2-4e5124ccb5ed"",
-                    ""path"": ""<Keyboard>/2"",
+                    ""path"": ""<Keyboard>/rightArrow"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
@@ -554,7 +609,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""1534dc16-a6aa-499d-9c3a-22b47347b52a"",
-                    ""path"": ""<Keyboard>/1"",
+                    ""path"": ""<Keyboard>/leftArrow"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
@@ -580,7 +635,18 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Gamepad"",
-                    ""action"": ""JumpNext"",
+                    ""action"": ""ScrubRight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b068589a-6e73-4a4b-a827-59f7a2846a2c"",
+                    ""path"": ""<Keyboard>/upArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""ScrubRight"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -591,17 +657,28 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Gamepad"",
-                    ""action"": ""JumpPrev"",
+                    ""action"": ""ScrubLeft"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ee33cc26-9268-4aeb-8640-80f85f34a06f"",
+                    ""path"": ""<Keyboard>/downArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""ScrubLeft"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
                     ""id"": ""9464561b-769a-4ee1-8fc8-7af73419cb90"",
-                    ""path"": ""<Keyboard>/r"",
+                    ""path"": ""<Keyboard>/rightShift"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""ToggleRecording"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -1293,8 +1370,8 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
         m_Player_PreviousFrame = m_Player.FindAction("PreviousFrame", throwIfNotFound: true);
         m_Player_NextFrame = m_Player.FindAction("NextFrame", throwIfNotFound: true);
-        m_Player_JumpNext = m_Player.FindAction("JumpNext", throwIfNotFound: true);
-        m_Player_JumpPrev = m_Player.FindAction("JumpPrev", throwIfNotFound: true);
+        m_Player_ScrubRight = m_Player.FindAction("ScrubRight", throwIfNotFound: true);
+        m_Player_ScrubLeft = m_Player.FindAction("ScrubLeft", throwIfNotFound: true);
         m_Player_ToggleRecording = m_Player.FindAction("ToggleRecording", throwIfNotFound: true);
         m_Player_TogglePlayback = m_Player.FindAction("TogglePlayback", throwIfNotFound: true);
         m_Player_Scrub = m_Player.FindAction("Scrub", throwIfNotFound: true);
@@ -1400,8 +1477,8 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Jump;
     private readonly InputAction m_Player_PreviousFrame;
     private readonly InputAction m_Player_NextFrame;
-    private readonly InputAction m_Player_JumpNext;
-    private readonly InputAction m_Player_JumpPrev;
+    private readonly InputAction m_Player_ScrubRight;
+    private readonly InputAction m_Player_ScrubLeft;
     private readonly InputAction m_Player_ToggleRecording;
     private readonly InputAction m_Player_TogglePlayback;
     private readonly InputAction m_Player_Scrub;
@@ -1443,13 +1520,13 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @NextFrame => m_Wrapper.m_Player_NextFrame;
         /// <summary>
-        /// Provides access to the underlying input action "Player/JumpNext".
+        /// Provides access to the underlying input action "Player/ScrubRight".
         /// </summary>
-        public InputAction @JumpNext => m_Wrapper.m_Player_JumpNext;
+        public InputAction @ScrubRight => m_Wrapper.m_Player_ScrubRight;
         /// <summary>
-        /// Provides access to the underlying input action "Player/JumpPrev".
+        /// Provides access to the underlying input action "Player/ScrubLeft".
         /// </summary>
-        public InputAction @JumpPrev => m_Wrapper.m_Player_JumpPrev;
+        public InputAction @ScrubLeft => m_Wrapper.m_Player_ScrubLeft;
         /// <summary>
         /// Provides access to the underlying input action "Player/ToggleRecording".
         /// </summary>
@@ -1514,12 +1591,12 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @NextFrame.started += instance.OnNextFrame;
             @NextFrame.performed += instance.OnNextFrame;
             @NextFrame.canceled += instance.OnNextFrame;
-            @JumpNext.started += instance.OnJumpNext;
-            @JumpNext.performed += instance.OnJumpNext;
-            @JumpNext.canceled += instance.OnJumpNext;
-            @JumpPrev.started += instance.OnJumpPrev;
-            @JumpPrev.performed += instance.OnJumpPrev;
-            @JumpPrev.canceled += instance.OnJumpPrev;
+            @ScrubRight.started += instance.OnScrubRight;
+            @ScrubRight.performed += instance.OnScrubRight;
+            @ScrubRight.canceled += instance.OnScrubRight;
+            @ScrubLeft.started += instance.OnScrubLeft;
+            @ScrubLeft.performed += instance.OnScrubLeft;
+            @ScrubLeft.canceled += instance.OnScrubLeft;
             @ToggleRecording.started += instance.OnToggleRecording;
             @ToggleRecording.performed += instance.OnToggleRecording;
             @ToggleRecording.canceled += instance.OnToggleRecording;
@@ -1564,12 +1641,12 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @NextFrame.started -= instance.OnNextFrame;
             @NextFrame.performed -= instance.OnNextFrame;
             @NextFrame.canceled -= instance.OnNextFrame;
-            @JumpNext.started -= instance.OnJumpNext;
-            @JumpNext.performed -= instance.OnJumpNext;
-            @JumpNext.canceled -= instance.OnJumpNext;
-            @JumpPrev.started -= instance.OnJumpPrev;
-            @JumpPrev.performed -= instance.OnJumpPrev;
-            @JumpPrev.canceled -= instance.OnJumpPrev;
+            @ScrubRight.started -= instance.OnScrubRight;
+            @ScrubRight.performed -= instance.OnScrubRight;
+            @ScrubRight.canceled -= instance.OnScrubRight;
+            @ScrubLeft.started -= instance.OnScrubLeft;
+            @ScrubLeft.performed -= instance.OnScrubLeft;
+            @ScrubLeft.canceled -= instance.OnScrubLeft;
             @ToggleRecording.started -= instance.OnToggleRecording;
             @ToggleRecording.performed -= instance.OnToggleRecording;
             @ToggleRecording.canceled -= instance.OnToggleRecording;
@@ -1939,19 +2016,19 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnNextFrame(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "JumpNext" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "ScrubRight" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnJumpNext(InputAction.CallbackContext context);
+        void OnScrubRight(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "JumpPrev" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "ScrubLeft" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnJumpPrev(InputAction.CallbackContext context);
+        void OnScrubLeft(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "ToggleRecording" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

@@ -10,8 +10,8 @@ namespace GMTK
     {
         private TimelineRunner _runner;
         [Header("Scene References")]
-        [SerializeField] private UIScrubController _scrubber;
         [SerializeField] private CameraFollow _cameraRig;
+        [Header("Input Settings")] public float worldRotate = -45;
         [Header("Player Game Controls")]
         public InputActionReference _jumpAction;
         public InputActionReference _moveAction;
@@ -24,6 +24,8 @@ namespace GMTK
         public InputActionReference _jumpForward;
         public InputActionReference _jumpBackward;
         public InputActionReference _holdToScrubWithMove;
+
+        public float _scrubTriggerSensitivity = 1;
         //
         private GameInput _gameInput;
         [CanBeNull] private ButtonEvent _currentJumpEvent;
@@ -37,6 +39,8 @@ namespace GMTK
         private bool _jumpReleasedThisFrame;
         private bool _movePressedThisFrame;
         private bool _moveReleasedThisFrame;
+
+        private float _scrubDeltaCounter;
         private void Awake()
         {
             _runner = GetComponent<TimelineRunner>();
@@ -54,6 +58,8 @@ namespace GMTK
 
         void Update()
         {
+            bool isScrubbing = false;
+
             if (_playPauseToggle.action.WasPerformedThisFrame())
             {
                 _runner.PlayPauseToggle();
@@ -67,30 +73,57 @@ namespace GMTK
             if (_stepForwardsOne.action.WasPerformedThisFrame())
             {
                 _runner.PauseIfPlaying();
-                _scrubber.StepRight();
+                _runner.StepForwardOne();
+                isScrubbing = true;
             }else if (_stepBackwardsOne.action.WasPerformedThisFrame())
             {
                 _runner.PauseIfPlaying();
-                _scrubber.StepLeft();
-            }else if (_jumpForward.action.WasPerformedThisFrame())
-            {
-                _runner.PauseIfPlaying();
-                _scrubber.JumpRight();
-            }else if (_jumpBackward.action.WasPerformedThisFrame())
-            {
-                _runner.PauseIfPlaying();
-                _scrubber.JumpLeft();
+                _runner.ScrubJumpToFrame(_runner.Timeline.CurrentDisplayedFrame -1);
+                isScrubbing = true;
             }
 
+            float leftTrigger = _jumpBackward.action.ReadValue<float>();
+            float rightTrigger = _jumpForward.action.ReadValue<float>();
+            if (rightTrigger > 0 || leftTrigger > 0)
+            {
+                isScrubbing = true;
+                _scrubDeltaCounter += rightTrigger*Time.deltaTime*_scrubTriggerSensitivity;
+                _scrubDeltaCounter -= leftTrigger*Time.deltaTime*_scrubTriggerSensitivity;
+                _runner.PauseIfPlaying();
+                int frames;
+                
+                if (_scrubDeltaCounter >= 0)
+                {
+                    frames = Mathf.FloorToInt(_scrubDeltaCounter);
+                }
+                else
+                {
+                    frames = Mathf.CeilToInt(_scrubDeltaCounter);
+
+                }
+                
+                if (Mathf.Abs(frames) > 0)
+                {
+                    _runner.ScrubJumpToFrame(_runner.Timeline.CurrentDisplayedFrame + frames);
+                    _scrubDeltaCounter -= frames;
+                }
+            }
+            else
+            {
+                _scrubDeltaCounter = 0;
+            }
+            
             bool scrubbing = _holdToScrubWithMove.action.IsPressed();
-            _scrubber.SetScrubbing(scrubbing);
             if (scrubbing)
             {
+                isScrubbing = true;
                 _runner.PauseIfPlaying();
                 //stop recording if recording?
                 int delta = (Mathf.RoundToInt(_moveAction.action.ReadValue<Vector2>().x));
-                _scrubber.Scrub(delta);
+                _runner.ScrubJumpToFrame(_runner.Timeline.CurrentDisplayedFrame + (delta));
             }
+
+            _runner.SetIsScrubbing(isScrubbing);
             
             if (_runner.State == RunnerControlState.Recording && _runner.Playing)
             {
@@ -217,7 +250,7 @@ namespace GMTK
         
         public Buttons DirToMovement(Vector2 inputDir)
         {
-            Vector3 dir = _cameraRig.InputDirToWorldDir(inputDir);
+            Vector3 dir = _cameraRig.InputDirToWorldDir(inputDir, worldRotate);
             var h = Mathf.RoundToInt(dir.normalized.x);
             var v = Mathf.RoundToInt(dir.normalized.z);
             Buttons b = 0;

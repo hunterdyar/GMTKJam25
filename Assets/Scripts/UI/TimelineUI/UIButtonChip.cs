@@ -21,6 +21,7 @@ namespace UI
 		public void Update()
 		{
 			UpdateVisuals();
+			
 		}
 
 		public void Init(UITimelineManager manager, ButtonEvent buttonEvent)
@@ -34,8 +35,22 @@ namespace UI
 		{
 			var r = _rectTransform;
 
-			var (left,right) = _manager.GetFramePosition(ButtonEvent);
+			if (_manager == null)
+			{
+				gameObject.SetActive(false);
+				return;
+			}
 
+			if (ButtonEvent.PressFrame >= ButtonEvent.ReleaseFrame && ButtonEvent.ReleaseFrame != -1)
+			{
+				_manager.InvalidateButton(ButtonEvent, this);
+				return;
+			}
+			var (left,right, visible) = _manager.GetFramePosition(ButtonEvent);
+			if (!visible)
+			{
+				//should be hidden!
+			}
 			if (right < left)
 			{
 				//Debug.LogWarning("reversed?");

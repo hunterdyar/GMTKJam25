@@ -171,7 +171,7 @@ namespace GMTK
 						}
 						else
 						{
-							a.ReleaseFrame = a.PressFrame;//invalidate jic.
+							a.ReleaseFrame = a.PressFrame;//invalidate for buttons to update..
 							a = null;
 						}
 					}else if(a.PressFrame == playbackFrame)
@@ -212,14 +212,24 @@ namespace GMTK
 					if (a.PressFrame < playbackFrame - 1)
 					{
 						a.ReleaseFrame = playbackFrame - 1;
+						if (a.PressFrame == a.ReleaseFrame)
+						{
+							a = null;
+						}
 					}
 					else
 					{
 						//we perfectly caused an overlap, destroy a, replace with b.
+						a.PressFrame = a.ReleaseFrame;//invalidate.
 						a = null;
 					}
 
 					//create a new press. or non-press, or whatever.
+					if (a != null)
+					{
+						a.PressFrame = a.ReleaseFrame; //invalidate any current references.
+					}
+
 					a = b;
 					b = null;
 				}
@@ -237,11 +247,19 @@ namespace GMTK
 						if (b.PressFrame < a.PressFrame)
 						{
 							a.PressFrame = b.PressFrame;
+							if (a.PressFrame == a.ReleaseFrame)
+							{
+								a = null;
+							}
 						}
 
 						if (b.ReleaseFrame == -1 || b.ReleaseFrame > a.ReleaseFrame)
 						{
 							a.ReleaseFrame = b.ReleaseFrame;
+							if (a.ReleaseFrame == a.PressFrame)
+							{
+								a = null;
+							}
 						}
 
 						b = null;
@@ -252,13 +270,23 @@ namespace GMTK
 						if (b.Button == Buttons.Jump)
 						{
 							Debug.Assert(a.Button == Buttons.None);
+							a.PressFrame = a.ReleaseFrame;//invalidate.
 							a = b;
 							b = null;
 						} else if (b.Button == Buttons.None)
 						{
 							Debug.Assert(a.Button == Buttons.Jump);
 							a.ReleaseFrame = _playbackFrame-1;
-							a = b;
+							if (a.PressFrame == a.ReleaseFrame)
+							{
+								a = null;
+							}
+							else
+							{
+								a.PressFrame = a.ReleaseFrame;//invalidate.
+								a = b;
+							}
+
 							b = null;
 						}
 					}
@@ -280,7 +308,7 @@ namespace GMTK
 
 		public void TickFrame(int frame, bool instant, bool createCheckpoint = false)
 		{
-			Debug.Log("tick "+frame);
+			//Debug.Log("tick "+frame);
 			if (frame == _lastTickedFrame)
 			{
 				Debug.LogWarning("are you sure about that? ");
@@ -387,16 +415,28 @@ namespace GMTK
 			if (input.JumpButton != null && input.JumpButton.ReleaseFrame == -1)
 			{
 				input.JumpButton.ReleaseFrame = frame;
+				if (input.JumpButton.PressFrame == input.JumpButton.ReleaseFrame)
+				{
+					input.JumpButton = null;
+				}
 			}
 
 			if (input.ArrowButton != null && input.ArrowButton.ReleaseFrame == -1)
 			{
 				input.ArrowButton.ReleaseFrame = frame;
+				if (input.ArrowButton.PressFrame == input.ArrowButton.ReleaseFrame)
+				{
+					input.ArrowButton = null;
+				}
 			}
 
 			if (input.ArrowButtonB != null && input.ArrowButtonB.ReleaseFrame == -1)
 			{
 				input.ArrowButtonB.ReleaseFrame = frame;
+				if (input.ArrowButtonB.PressFrame == input.ArrowButtonB.ReleaseFrame)
+				{
+					input.ArrowButtonB = null;
+				}
 			}
 			// _inputHistory[frame] = input;
 			_pending = GameInput.None;

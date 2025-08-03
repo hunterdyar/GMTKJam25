@@ -1,7 +1,7 @@
 ﻿using System;
 using GMTK;
-using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace UI
 {
@@ -11,7 +11,11 @@ namespace UI
 		public ButtonEvent ButtonEvent;
 		private RectTransform _rectTransform;
 		private RectTransform _parent;
-
+		public Sprite[] _buttonToImage;
+		public Color ButtonColor;
+		public Color ArrowColor;
+		public Image BGImage;
+		public Image IconImage;
 		private void Awake()
 		{
 			_rectTransform = GetComponent<RectTransform>();
@@ -31,8 +35,38 @@ namespace UI
 			UpdateVisuals();
 		}
 
+		private Sprite GetSprite(Buttons button)
+		{
+			switch (button)
+			{
+				case Buttons.None:
+					return null;
+				case Buttons.Jump:
+					return _buttonToImage[0];
+				case Buttons.Up:
+					return _buttonToImage[1];
+				case Buttons.Down:
+					return _buttonToImage[2];
+				case Buttons.Left:
+					return _buttonToImage[3];
+				case Buttons.Right:
+					return _buttonToImage[4];
+				case Buttons.UpRight:
+					return _buttonToImage[5];
+				case Buttons.DownRight:
+					return _buttonToImage[6];
+				case Buttons.DownLeft:
+					return _buttonToImage[7];
+				case Buttons.UpLeft:
+					return _buttonToImage[8];
+				default:
+					return null;
+			}
+		}
 		private void UpdateVisuals()
 		{
+			BGImage.color = ButtonEvent.Button == Buttons.Jump ? ButtonColor : ArrowColor;
+			IconImage.sprite = GetSprite(ButtonEvent.Button);
 			var r = _rectTransform;
 
 			if (_manager == null)

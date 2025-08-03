@@ -166,7 +166,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92f235ff036d87c409821110d0cf3bf2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  launchForce: 300
+  launchForce: 50
   launchDirection: {x: 0, y: 1, z: 0}
   audioSource: {fileID: 0}
   launchSound: {fileID: 0}
@@ -356,7 +356,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92f235ff036d87c409821110d0cf3bf2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  launchForce: 300
+  launchForce: 50
   launchDirection: {x: 0, y: 1, z: 0}
   audioSource: {fileID: 0}
   launchSound: {fileID: 0}
@@ -705,7 +705,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92f235ff036d87c409821110d0cf3bf2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  launchForce: 300
+  launchForce: 50
   launchDirection: {x: 0, y: 1, z: 0}
   audioSource: {fileID: 0}
   launchSound: {fileID: 0}
@@ -1595,7 +1595,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92f235ff036d87c409821110d0cf3bf2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  launchForce: 300
+  launchForce: 50
   launchDirection: {x: 0, y: 1, z: 0}
   audioSource: {fileID: 0}
   launchSound: {fileID: 0}
@@ -2387,7 +2387,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92f235ff036d87c409821110d0cf3bf2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  launchForce: 300
+  launchForce: 50
   launchDirection: {x: 0, y: 1, z: 0}
   audioSource: {fileID: 0}
   launchSound: {fileID: 0}
@@ -2515,7 +2515,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92f235ff036d87c409821110d0cf3bf2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  launchForce: 300
+  launchForce: 50
   launchDirection: {x: 0, y: 1, z: 0}
   audioSource: {fileID: 0}
   launchSound: {fileID: 0}
@@ -3234,7 +3234,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92f235ff036d87c409821110d0cf3bf2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  launchForce: 300
+  launchForce: 50
   launchDirection: {x: 0, y: 1, z: 0}
   audioSource: {fileID: 0}
   launchSound: {fileID: 0}
@@ -4080,7 +4080,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92f235ff036d87c409821110d0cf3bf2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  launchForce: 300
+  launchForce: 50
   launchDirection: {x: 0, y: 1, z: 0}
   audioSource: {fileID: 0}
   launchSound: {fileID: 0}
@@ -4383,7 +4383,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92f235ff036d87c409821110d0cf3bf2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  launchForce: 300
+  launchForce: 50
   launchDirection: {x: 0, y: 1, z: 0}
   audioSource: {fileID: 0}
   launchSound: {fileID: 0}
@@ -4794,7 +4794,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92f235ff036d87c409821110d0cf3bf2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  launchForce: 300
+  launchForce: 50
   launchDirection: {x: 0, y: 1, z: 0}
   audioSource: {fileID: 0}
   launchSound: {fileID: 0}
@@ -5379,7 +5379,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92f235ff036d87c409821110d0cf3bf2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  launchForce: 22
+  launchForce: 50
   launchDirection: {x: 0, y: 1, z: 0}
   audioSource: {fileID: 0}
   launchSound: {fileID: 0}
@@ -5966,7 +5966,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92f235ff036d87c409821110d0cf3bf2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  launchForce: 300
+  launchForce: 50
   launchDirection: {x: 0, y: 1, z: 0}
   audioSource: {fileID: 0}
   launchSound: {fileID: 0}
@@ -6413,19 +6413,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6353316147618317671, guid: 5472c24a0429877408bb43375b637c9b, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.99240386
+      value: 0.9361168
       objectReference: {fileID: 0}
     - target: {fileID: 6353316147618317671, guid: 5472c24a0429877408bb43375b637c9b, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.08682413
+      value: 0.08189965
       objectReference: {fileID: 0}
     - target: {fileID: 6353316147618317671, guid: 5472c24a0429877408bb43375b637c9b, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.0075961305
+      value: 0.029809041
       objectReference: {fileID: 0}
     - target: {fileID: 6353316147618317671, guid: 5472c24a0429877408bb43375b637c9b, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.08682413
+      value: -0.34071872
       objectReference: {fileID: 0}
     - target: {fileID: 6353316147618317671, guid: 5472c24a0429877408bb43375b637c9b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -6437,7 +6437,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6353316147618317671, guid: 5472c24a0429877408bb43375b637c9b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: -10
+      value: -40
       objectReference: {fileID: 0}
     - target: {fileID: 6759974027416985525, guid: 5472c24a0429877408bb43375b637c9b, type: 3}
       propertyPath: m_Name
@@ -6973,15 +6973,15 @@ PrefabInstance:
       objectReference: {fileID: 689992272}
     - target: {fileID: 7837513069924566114, guid: 62c9ffd2f8ed29448a79b66e2335daa1, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -2.836
       objectReference: {fileID: 0}
     - target: {fileID: 7837513069924566114, guid: 62c9ffd2f8ed29448a79b66e2335daa1, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.5
+      value: 14.48
       objectReference: {fileID: 0}
     - target: {fileID: 7837513069924566114, guid: 62c9ffd2f8ed29448a79b66e2335daa1, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 9.37
       objectReference: {fileID: 0}
     - target: {fileID: 7837513069924566114, guid: 62c9ffd2f8ed29448a79b66e2335daa1, type: 3}
       propertyPath: m_LocalRotation.w

@@ -8,55 +8,36 @@ public class CameraFollow : MonoBehaviour
 
     [Header("Controls")] public InputActionReference _lookLeft;
     public InputActionReference _lookRight;
+    public InputActionReference _peek;
     public bool FlipDir;
 
     [Header("Camera Offset")] public bool Only4Dirs;
     public float offsetDistance = 10;
     public float followSpeed = 5f;
-
+    public float peekSize = 3f;
+    
     [Header("Look At Target")]
     public bool lookAtTarget = true;
 
+    public Vector2 peek =  Vector2.zero;
     public int LookDir;
     private Vector3Int[] LookDirs =
     {
-        new Vector3Int(1, 0, 1), //up right
-        new Vector3Int(1, 0, 0), //right
-        new Vector3Int(1, 0, -1), //down right
-        new Vector3Int(0, 0, -1), //down
-        new Vector3Int(-1, 0, -1), //down left
-        new Vector3Int(-1, 0, 0), //left
-        new Vector3Int(-1, 0, 1), //up left
-        new Vector3Int(0, 0, 1), //up
+        new(1, 0, 1), //up right
+        new(1, 0, 0), //right
+        new(1, 0, -1), //down right
+        new(0, 0, -1), //down
+        new(-1, 0, -1), //down left
+        new(-1, 0, 0), //left
+        new(-1, 0, 1), //up left
+        new(0, 0, 1), //up
     };
-
-    public float[] LookXToWorldX =
-    {
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-    };
-
-    public float[] LookYToWorldY =
-    {
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-    };
+    
     private Vector3 _currentVelocity;
 
     void Awake()
     {
+        _peek.action.Enable();
         _lookLeft.action.Enable();
         _lookRight.action.Enable();
         if (Only4Dirs)
@@ -125,16 +106,20 @@ public class CameraFollow : MonoBehaviour
                 RotateCameraRight();
             }
         }
+        
+        peek = _peek.action.ReadValue<Vector2>();
     }
+
+    private Vector3 _currentNonPeekPosition;
     void LateUpdate()
     {
         if (target == null) return;
 
         Vector3 desiredPosition = GetTargetPosition() + GetOffset();
-
         // Smooth damping
-        transform.position = Vector3.SmoothDamp(transform.position, desiredPosition, ref _currentVelocity, 1f / followSpeed);
-        
+        _currentNonPeekPosition = Vector3.SmoothDamp(_currentNonPeekPosition, desiredPosition, ref _currentVelocity, 1f / followSpeed);
+        var p = Vector3.up * peek.y * peekSize + Vector3.right * peek.x * peekSize;
+        transform.position = _currentNonPeekPosition + p;
         if (lookAtTarget)
         {
             transform.LookAt(GetTargetPosition());

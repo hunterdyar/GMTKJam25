@@ -29,7 +29,7 @@ namespace GMTK
 			
 			if (ReleaseFrame < 0)
 			{
-				return frame > PressFrame;	
+				return frame >= PressFrame;	
 			}
 			
 			return frame >= PressFrame && frame < ReleaseFrame;

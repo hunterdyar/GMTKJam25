@@ -18,7 +18,6 @@ namespace GMTK
 		public float MoveSpeed;
 		public float JumpBufferTimer;
 		public float CoyoteTimer;
-
 		public PlayerCheckpointData(TimelineListener timelineListener, Rigidbody rb, PlayerMovement player) : base(timelineListener)
 		{
 			_player = player;

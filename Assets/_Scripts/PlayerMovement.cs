@@ -5,7 +5,6 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private PlatformerGameInput gameInput;
     [SerializeField] private Camera playerCamera;
 
     [Header("Audio")]
@@ -41,13 +40,11 @@ public class PlayerMovement : MonoBehaviour
     [HideInInspector] public Vector3 inputDirection;
     [HideInInspector] public bool isGrounded;
     [HideInInspector] public bool jump;
-    
+    [HideInInspector] public bool _canPlayJumpSound;
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
 
-        if (gameInput == null)
-            gameInput = FindAnyObjectByType<PlatformerGameInput>();
         if (playerCamera == null)
             playerCamera = Camera.main;
 
@@ -69,6 +66,7 @@ public class PlayerMovement : MonoBehaviour
     private void OnInput(int frame, GameInput input, bool instant)
     {
         jump = input.JumpButton != null && input.JumpButton.IsPressed(frame);
+        _canPlayJumpSound = input.JumpButton != null && frame == input.JumpButton.PressFrame;
         Vector2 dir = (input.ArrowButton != null && input.ArrowButton.IsPressed(frame)) ? input.ArrowButton.GetDir() : Vector2.zero;
         dir.Normalize();
         inputDirection = new Vector3(dir.x, 0, dir.y);
@@ -161,11 +159,10 @@ public class PlayerMovement : MonoBehaviour
     {
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z); // reset vertical
         rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-
-        if (!instant && audioSource != null && jumpSound != null)
+        if (_canPlayJumpSound && !instant && audioSource != null && jumpSound != null)
         {
-            Debug.Log("jumpsound");
             audioSource.PlayOneShot(jumpSound);
+            _canPlayJumpSound = false;
         }
     }
 

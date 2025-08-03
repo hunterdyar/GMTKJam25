@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using GMTK.Juice;
+using UnityEngine;
 
 namespace GMTK
 {
@@ -94,6 +95,26 @@ namespace GMTK
 		override public void RestoreToCheckpoint()
 		{
 			_gameManager.SetGameState(_state);
+		}
+	}
+	
+	public class TrailCheckpointData : CheckpointData
+	{
+		private readonly RoboTrail _trail;
+		private readonly int _startIndex;
+		private readonly int _endIndex;
+		
+		public TrailCheckpointData(RoboTrail roboTrail) : base(roboTrail)
+		{
+			_trail = roboTrail;
+			_startIndex = roboTrail.StartIndex;
+			_endIndex = roboTrail.EndIndex;
+		}
+
+		override public void RestoreToCheckpoint()
+		{
+			_trail.StartIndex = _startIndex;
+			_trail.EndIndex = _endIndex;
 		}
 	}
 }

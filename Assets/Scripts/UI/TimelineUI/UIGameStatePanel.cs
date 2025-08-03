@@ -24,6 +24,11 @@ namespace UI
 
 		public void GoToNextScene()
 		{
+			GoToNextLevel();
+		}
+
+		public static void GoToNextLevel()
+		{
 			var s = SceneManager.GetActiveScene().buildIndex;
 			var max = SceneManager.sceneCountInBuildSettings;
 			s++;
@@ -31,9 +36,10 @@ namespace UI
 			{
 				s = 0;
 			}
+
 			SceneManager.LoadScene(s);
 		}
-
+		
 		public void RestartLevel()
 		{
 			SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);

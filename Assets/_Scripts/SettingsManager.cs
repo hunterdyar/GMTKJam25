@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UI;
 using UnityEngine.Audio;
 
 public class SettingsManager : MonoBehaviour
@@ -112,6 +113,10 @@ public class SettingsManager : MonoBehaviour
         Debug.Log("Settings reset to defaults (not saved yet).");
     }
 
+    public void SkipLevel()
+    {
+        UIGameStatePanel.GoToNextLevel();
+    }
 
     private void SetMixerVolume(string parameter, float sliderValue)
     {

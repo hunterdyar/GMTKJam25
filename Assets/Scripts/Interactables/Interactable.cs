@@ -30,6 +30,11 @@ namespace GMTK
 
 		private void OnInput(int arg1, GameInput arg2, bool arg3)
 		{
+			if (_box == null)
+			{
+				Debug.LogWarning("?");
+				return;
+			}
 			//if overlap.... set some bool.
 			bool noPlayer = true;
 			var size = Physics.OverlapBoxNonAlloc(_box.bounds.center, _box.bounds.extents, _castResults);

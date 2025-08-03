@@ -27,9 +27,14 @@ public class LaunchPad : MonoBehaviour
 
         if (rb != null && other.CompareTag("Player"))
         {
+            //get world launch dir
             var dir = transform.TransformDirection(launchDirection.normalized);
+
+            //remove speed in direction against launch
             var opposingFactor = Vector3.Dot(rb.linearVelocity, -dir);
-            rb.linearVelocity += dir * opposingFactor;
+            rb.linearVelocity -= dir * opposingFactor;
+            
+            //launch
             rb.AddForce(dir * launchForce, ForceMode.VelocityChange);
 
             if (audioSource != null && launchSound != null)

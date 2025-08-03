@@ -1,10 +1,12 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
 
 public class OpenOptions : MonoBehaviour
 {
     [Header("Options Menu")]
     [SerializeField] private GameObject optionsPanel;
+    [SerializeField] private GameObject firstSelectedOptionsButton;
 
     private bool isOptionsOpen = false;
     private InputSystem_Actions inputActions;
@@ -41,9 +43,16 @@ public class OpenOptions : MonoBehaviour
         Time.timeScale = isOptionsOpen ? 0f : 1f;
         Cursor.visible = isOptionsOpen;
         Cursor.lockState = isOptionsOpen ? CursorLockMode.None : CursorLockMode.Locked;
+
+        if (isOptionsOpen && firstSelectedOptionsButton != null)
+        {
+            // Clear and set first selected for controller
+            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current.SetSelectedGameObject(firstSelectedOptionsButton);
+        }
     }
 
-    public void CloseOptionsMenu() // call this on your Back button
+    public void CloseOptionsMenu() //Back button
     {
         isOptionsOpen = false;
 
@@ -53,5 +62,8 @@ public class OpenOptions : MonoBehaviour
         Time.timeScale = 1f;
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+
+        // clear selection when closing
+        EventSystem.current.SetSelectedGameObject(null);
     }
 }

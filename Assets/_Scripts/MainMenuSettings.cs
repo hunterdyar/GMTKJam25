@@ -5,18 +5,15 @@ using UI;
 using UnityEngine.Audio;
 using UnityEngine.EventSystems;
 
-public class SettingsManager : MonoBehaviour
+public class MainMenuSettings : MonoBehaviour
 {
     [Header("Controller Input")]
     [SerializeField] private GameObject firstSelectedOptionsButton;
-    [SerializeField] private GameObject resetLevelButton;
-    [SerializeField] private GameObject successButton;
+    [SerializeField] private GameObject selectedMainButtonAfterClose;
     private bool isOptionsOpen = false;
 
     [Header("UI Elements")]
-    [SerializeField] private GameObject beginPanel;
-    [SerializeField] private GameObject endTimePanel;
-    [SerializeField] private GameObject successPanel;
+    [SerializeField] private GameObject mainMenuPanel;
     [SerializeField] private GameObject settingsPanel;
     [SerializeField] private Toggle fullscreenToggle;
     [SerializeField] private TMP_Dropdown resolutionDropdown;
@@ -34,23 +31,6 @@ public class SettingsManager : MonoBehaviour
     private void Start()
     {
         LoadSettings(); // Loads and applies settings
-    }
-
-    private void Update()
-    {
-        if(successPanel.gameObject.activeInHierarchy)
-        {
-            // Clear and set first selected for controller
-            EventSystem.current.SetSelectedGameObject(null);
-            EventSystem.current.SetSelectedGameObject(successButton);
-        }
-
-        if (endTimePanel.gameObject.activeInHierarchy)
-        {
-            // Clear and set first selected for controller
-            EventSystem.current.SetSelectedGameObject(null);
-            EventSystem.current.SetSelectedGameObject(resetLevelButton);
-        }
     }
 
     private void LoadSettings()
@@ -87,15 +67,10 @@ public class SettingsManager : MonoBehaviour
 
 
     public void OpenSettings()
-    { 
-        if(beginPanel.gameObject.activeInHierarchy || successPanel.gameObject.activeInHierarchy || endTimePanel.gameObject.activeInHierarchy)
-        {
-            return;
-        }
-
-        ShowOnly(settingsPanel);
+    {
+        settingsPanel.SetActive(true);
+        mainMenuPanel.SetActive(false);
         isOptionsOpen = true;
-        
 
         if (isOptionsOpen && firstSelectedOptionsButton != null)
         {
@@ -108,6 +83,11 @@ public class SettingsManager : MonoBehaviour
     {
         settingsPanel.SetActive(false);
         isOptionsOpen = false;
+        mainMenuPanel.SetActive(true);
+
+        // Clear and set first selected for controller
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(selectedMainButtonAfterClose);
     }
 
     public void ApplySettings()
@@ -170,17 +150,6 @@ public class SettingsManager : MonoBehaviour
     {
         float volume = Mathf.Log10(Mathf.Max(sliderValue, 0.001f)) * 20f;
         audioMixer.SetFloat(parameter, volume);
-    }
-
-    private void ShowOnly(GameObject panelToShow)
-    {
-        endTimePanel.SetActive(false);
-        successPanel.SetActive(false);
-        beginPanel.SetActive(false);
-        settingsPanel.SetActive(false);
-
-        if (panelToShow != null)
-            panelToShow.SetActive(true);
     }
 
     public void OnMasterVolumeChanged(float value) => SetMixerVolume("MasterVolume", value);

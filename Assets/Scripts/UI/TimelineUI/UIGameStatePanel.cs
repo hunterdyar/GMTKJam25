@@ -1,6 +1,7 @@
 ﻿using System;
 using GMTK;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace UI
 {
@@ -19,6 +20,23 @@ namespace UI
 		void Start()
 		{
 			//UpdatePanel(RunnerControlState.Playback, false);
+		}
+
+		public void GoToNextScene()
+		{
+			var s = SceneManager.GetActiveScene().buildIndex;
+			var max = SceneManager.sceneCountInBuildSettings;
+			s++;
+			if (s >= max)
+			{
+				s = 0;
+			}
+			SceneManager.LoadScene(s);
+		}
+
+		public void RestartLevel()
+		{
+			SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 		}
 		private void OnEnable()
 		{

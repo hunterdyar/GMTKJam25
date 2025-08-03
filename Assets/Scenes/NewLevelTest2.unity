@@ -935,7 +935,7 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
+  m_RenderPostProcessing: 1
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 0
@@ -988,11 +988,30 @@ MonoBehaviour:
   target: {fileID: 162847718}
   _lookLeft: {fileID: 0}
   _lookRight: {fileID: 0}
+  FlipDir: 0
   Only4Dirs: 0
   offsetDistance: 10
   followSpeed: 5
   lookAtTarget: 1
   LookDir: 0
+  LookXToWorldX:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  LookYToWorldY:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
 --- !u!4 &746918533
 Transform:
   m_ObjectHideFlags: 0
